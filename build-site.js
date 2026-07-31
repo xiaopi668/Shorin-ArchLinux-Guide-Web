@@ -77,9 +77,8 @@ function rewriteMarkdown(text, mdSrcDir) {
   });
   text = text.replace(/<a href="https:\/\/star-history\.com\/[^"]*"[^>]*>[\s\S]*?<\/a>/,
     `[![GitHub Stars](https://img.shields.io/github/stars/${REPO})](https://github.com/${REPO}) [![GitHub Forks](https://img.shields.io/github/forks/${REPO})](https://github.com/${REPO}) [查看 Star 历史 ↗](https://star-history.com/#${REPO}&Date)`);
-  // 上游原文修正（exfat-utils 已被 Arch 官方仓库移除等）
+  // 上游原文修正（AM4/AM5 平台混淆、错别字等）
   text = text
-    .replace(/exfat-utils/g, 'exfatprogs')
     .replace(/AM4（7000系）/g, 'AM5（7000系）')
     .replace(/的的写法/g, '的写法')
     .replace(/配置配置文件/g, '配置文件')
