@@ -95,9 +95,7 @@ const orderArch = ['安装ArchLinux.md', '手动安装省流版.md', '安装桌�
   '性能优化.md', '小技巧.md', 'issues.md', '附录.md', '交流群.md', 'Arch部署Astrbot.md', '常见争议澄清.md'];
 const orderRoot = ['Home.md', '安装任意Linux系统的前期准备工作.md', '活用AI.md', '干净删除Linux.md'];
 
-const TITLE_OVERRIDES = { '安装ArchLinux.md': '安装ArchLinux' };
-
-function buildGroup(srcDir, order, label, icon, outDir) {
+function buildGroup(srcDir, order, label, icon, outDir, titleFromName) {
   const files = fs.readdirSync(srcDir).filter(f => f.endsWith('.md'));
   files.sort((a, b) => {
     const ia = order.indexOf(a), ib = order.indexOf(b);
@@ -105,7 +103,7 @@ function buildGroup(srcDir, order, label, icon, outDir) {
   });
   const items = files.map(name => {
     const md = fs.readFileSync(path.join(srcDir, name), 'utf8');
-    const title = TITLE_OVERRIDES[name] || firstTitle(md) || name.replace('.md', '');
+    const title = titleFromName ? name.replace('.md', '') : (firstTitle(md) || name.replace('.md', ''));
     const rel = path.relative(OUT, path.join(outDir, name.replace('.md', '.html'))).split(path.sep).join('/');
     return { name, title, rel, md, srcDir };
   });
@@ -114,7 +112,7 @@ function buildGroup(srcDir, order, label, icon, outDir) {
 
 const groups = [];
 groups.push(buildGroup(path.join(SRC, 'wiki'), orderRoot, '通用', '🧭', path.join(OUT, 'wiki')));
-groups.push(buildGroup(path.join(SRC, 'wiki/archlinux'), orderArch, 'Arch Linux', '🐉', path.join(OUT, 'wiki/archlinux')));
+groups.push(buildGroup(path.join(SRC, 'wiki/archlinux'), orderArch, 'Arch Linux', '🐉', path.join(OUT, 'wiki/archlinux'), true));
 groups.push(buildGroup(path.join(SRC, 'wiki/linuxmint'), [], 'Linux Mint', '🌿', path.join(OUT, 'wiki/linuxmint')));
 groups.push(buildGroup(path.join(SRC, 'wiki/cachyos'), [], 'CachyOS', '🚀', path.join(OUT, 'wiki/cachyos')));
 
