@@ -1,0 +1,35 @@
+name: Sync upstream
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+
+      - name: Sync from upstream
+        run: |
+          git remote add upstream https://github.com/SHORiN-KiWATA/Shorin-ArchLinux-Guide.git
+          git fetch upstream
+          if git merge-base --is-ancestor upstream/main HEAD; then
+            echo "Already up to date"
+          else
+            git merge upstream/main --no-edit -m "Sync upstream" \
+              || { echo "::error::Merge conflict, resolve manually"; exit 1; }
+            git push origin main
+          fi
+
+      - name: Bump build to trigger CF Pages
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          git commit --allow-empty -m "Trigger CF Pages rebuild" && git push origin main
