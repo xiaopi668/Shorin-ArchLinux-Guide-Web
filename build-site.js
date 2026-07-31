@@ -95,14 +95,15 @@ fs.writeFileSync(path.join(OUT, '_redirects'),
 
 // ---------- nav ----------
 const ARCH_SUBGROUPS = [
-  ['🚀 系统安装', ['安装ArchLinux.md', '手动安装省流版.md', '安装桌面环境前的准备.md']],
-  ['🖥️ 桌面环境', ['安装桌面环境或窗口管理器.md', '一键配置桌面环境.md', '安装GNOME.md', '安装KDE.md', '安装Niri.md', '安装Labwc.md', '安装Wayfire.md']],
-  ['🎮 显卡驱动', ['显卡驱动和硬件编解码.md', '显卡切换.md', '热切换显卡直通.md']],
-  ['🛠️ 基础配置', ['中文输入法.md', '代理.md', '软件安装相关.md', '快照和系统维护.md']],
-  ['✨ 桌面美化', ['我的GNOME自定义设置.md', '我的KDE自定义设置.md', 'ShorinNiri功能介绍.md', '终端美化.md', 'grub美化.md']],
-  ['⚡ 优化提升', ['性能优化.md', '小技巧.md']],
-  ['🖧 虚拟化与游戏', ['虚拟机.md', 'KVM虚拟机.md', '玩游戏.md']],
-  ['📖 其他', ['常见争议澄清.md', 'issues.md', 'Arch部署Astrbot.md', '附录.md']]
+  ['① 安装系统', ['安装ArchLinux.md', '手动安装省流版.md', '安装桌面环境前的准备.md']],
+  ['② 选择桌面环境', ['安装桌面环境或窗口管理器.md', '一键配置桌面环境.md']],
+  ['③ 安装桌面环境', ['安装GNOME.md', '安装KDE.md', '安装Niri.md', '安装Labwc.md', '安装Wayfire.md']],
+  ['④ 配置显卡', ['显卡驱动和硬件编解码.md', '显卡切换.md', '热切换显卡直通.md']],
+  ['⑤ 基础配置', ['中文输入法.md', '代理.md', '软件安装相关.md', '快照和系统维护.md']],
+  ['⑥ 桌面美化', ['我的GNOME自定义设置.md', '我的KDE自定义设置.md', 'ShorinNiri功能介绍.md', '终端美化.md', 'grub美化.md']],
+  ['⑦ 性能优化', ['性能优化.md', '小技巧.md']],
+  ['⑧ 虚拟化与游戏', ['虚拟机.md', 'KVM虚拟机.md', '玩游戏.md']],
+  ['⑨ 其他', ['常见争议澄清.md', 'issues.md', 'Arch部署Astrbot.md', '附录.md']]
 ];
 
 const orderArch = ARCH_SUBGROUPS.map(s => s[1]).flat();
