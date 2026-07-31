@@ -211,6 +211,19 @@ a:hover { text-decoration: underline; }
   text-transform: none; letter-spacing: 0;
 }
 
+.sb-list a.sb-node {
+  margin-top: 8px;
+  padding: 5px 10px;
+  color: var(--accent-2);
+  font-weight: 700;
+  background: linear-gradient(90deg, rgba(23,147,209,0.10), transparent);
+  border-left: 2px solid var(--accent);
+}
+.sb-list a.sb-node:hover { background: var(--bg-3); padding-left: 10px; }
+.sb-list a.sb-child { padding-left: 20px; }
+.sb-list a.sb-child::before { left: 12px; }
+.sb-list a.sb-child:hover { padding-left: 22px; }
+
 /* ===== Main ===== */
 main { min-width: 0; }
 .page-title {

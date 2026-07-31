@@ -94,22 +94,21 @@ fs.writeFileSync(path.join(OUT, '_redirects'),
   '/wiki/wiki/* /wiki/:splat 301\n');
 
 // ---------- nav ----------
-const ARCH_SUBGROUPS = [
-  ['① 安装系统', ['安装ArchLinux.md', '手动安装省流版.md', '安装桌面环境前的准备.md']],
-  ['② 选择桌面环境', ['安装桌面环境或窗口管理器.md', '一键配置桌面环境.md']],
-  ['③ 安装桌面环境', ['安装GNOME.md', '安装KDE.md', '安装Niri.md', '安装Labwc.md', '安装Wayfire.md']],
-  ['④ 配置显卡', ['显卡驱动和硬件编解码.md', '显卡切换.md', '热切换显卡直通.md']],
-  ['⑤ 基础配置', ['中文输入法.md', '代理.md', '软件安装相关.md', '快照和系统维护.md']],
-  ['⑥ 桌面美化', ['我的GNOME自定义设置.md', '我的KDE自定义设置.md', 'ShorinNiri功能介绍.md', '终端美化.md', 'grub美化.md']],
-  ['⑦ 性能优化', ['性能优化.md', '小技巧.md']],
-  ['⑧ 虚拟化与游戏', ['虚拟机.md', 'KVM虚拟机.md', '玩游戏.md']],
-  ['⑨ 其他', ['常见争议澄清.md', 'issues.md', 'Arch部署Astrbot.md', '附录.md']]
+const ARCH_TREE = [
+  { label: '① 安装系统', entry: '安装ArchLinux.md', items: ['手动安装省流版.md', '安装桌面环境前的准备.md'] },
+  { label: '② 选择桌面环境', entry: '安装桌面环境或窗口管理器.md', items: ['安装GNOME.md', '安装KDE.md', '安装Niri.md', '安装Labwc.md', '安装Wayfire.md'] },
+  { label: '③ 配置显卡', entry: '显卡驱动和硬件编解码.md', items: ['显卡切换.md', '热切换显卡直通.md'] },
+  { label: '④ 基础配置', entry: '中文输入法.md', items: ['代理.md', '软件安装相关.md', '快照和系统维护.md'] },
+  { label: '⑤ 桌面美化', entry: '我的GNOME自定义设置.md', items: ['我的KDE自定义设置.md', 'ShorinNiri功能介绍.md', '终端美化.md', 'grub美化.md'] },
+  { label: '⑥ 性能优化', entry: '性能优化.md', items: ['小技巧.md'] },
+  { label: '⑦ 虚拟化与游戏', entry: '虚拟机.md', items: ['KVM虚拟机.md', '玩游戏.md'] },
+  { label: '⑧ 其他', entry: '附录.md', items: ['常见争议澄清.md', 'issues.md', 'Arch部署Astrbot.md'] }
 ];
 
-const orderArch = ARCH_SUBGROUPS.map(s => s[1]).flat();
+const orderArch = ARCH_TREE.map(n => [n.entry].concat(n.items)).flat();
 const orderRoot = ['Home.md', '安装任意Linux系统的前期准备工作.md', '活用AI.md', '干净删除Linux.md'];
 
-function buildGroup(srcDir, order, label, icon, outDir, titleFromName, exclude, subs) {
+function buildGroup(srcDir, order, label, icon, outDir, titleFromName, exclude, tree) {
   const files = fs.readdirSync(srcDir).filter(f => f.endsWith('.md') && !(exclude || []).includes(f));
   files.sort((a, b) => {
     const ia = order.indexOf(a), ib = order.indexOf(b);
@@ -121,12 +120,12 @@ function buildGroup(srcDir, order, label, icon, outDir, titleFromName, exclude, 
     const rel = path.relative(OUT, path.join(outDir, name.replace('.md', '.html'))).split(path.sep).join('/');
     return { name, title, rel, md, srcDir };
   });
-  return { label, icon, items, subs };
+  return { label, icon, items, tree };
 }
 
 const groups = [];
 groups.push(buildGroup(path.join(SRC, 'wiki'), orderRoot, '通用', '🧭', path.join(OUT, 'wiki')));
-groups.push(buildGroup(path.join(SRC, 'wiki/archlinux'), orderArch, 'Arch Linux', '🐉', path.join(OUT, 'wiki/archlinux'), true, [], ARCH_SUBGROUPS));
+groups.push(buildGroup(path.join(SRC, 'wiki/archlinux'), orderArch, 'Arch Linux', '🐉', path.join(OUT, 'wiki/archlinux'), true, [], ARCH_TREE));
 groups.push(buildGroup(path.join(SRC, 'wiki/linuxmint'), [], 'Linux Mint', '🌿', path.join(OUT, 'wiki/linuxmint')));
 groups.push(buildGroup(path.join(SRC, 'wiki/cachyos'), [], 'CachyOS', '🚀', path.join(OUT, 'wiki/cachyos')));
 
@@ -146,13 +145,14 @@ function sidebar(current, prefix) {
   h += `<a href="/index.html" class="${current === 'index.html' ? 'cur' : ''}">🏠 首页 / 项目简介</a>`;
   for (const g of groups) {
     h += `<div class="group">${g.icon} ${g.label}</div>`;
-    if (g.subs) {
-      for (const [subLabel, names] of g.subs) {
-        h += `<div class="group sub">${subLabel}</div>`;
-        for (const it of g.items) {
-          if (names.includes(it.name)) {
-            h += `<a href="/${it.rel}" title="${it.title}" class="${current === it.rel ? 'cur' : ''}">${it.title}</a>`;
-          }
+    if (g.tree) {
+      for (const node of g.tree) {
+        const e = g.items.find(it => it.name === node.entry);
+        const isCur = e && current === e.rel;
+        h += `<a class="sb-node${isCur ? ' cur' : ''}" href="/${e.rel}" title="${e ? e.title : ''}">${node.label}</a>`;
+        for (const name of node.items) {
+          const it = g.items.find(x => x.name === name);
+          if (it) h += `<a class="sb-child${current === it.rel ? ' cur' : ''}" href="/${it.rel}" title="${it.title}">${it.title}</a>`;
         }
       }
     } else {
