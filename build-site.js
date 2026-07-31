@@ -367,7 +367,11 @@ const contactCard = `<div class="contact-card">
 </div>`;
 pages.push({ rel: 'index.html', title: 'SHORiNのARCH · Arch Linux Guide', body: readmeBody + contactCard });
 slugCounts = {};
-const clBody = marked.parse(rewriteMarkdown(beautifyChangelog(fs.readFileSync(path.join(SRC, '更新日志.md'), 'utf8')), SRC));
+// 更新日志：上游已删除 更新日志.md，用本地 CHANGELOG.md 兜底（每日 sync 不会被上游删掉）
+const clSrc = fs.existsSync(path.join(SRC, '更新日志.md'))
+  ? path.join(SRC, '更新日志.md')
+  : path.join(SRC, 'CHANGELOG.md');
+const clBody = marked.parse(rewriteMarkdown(beautifyChangelog(fs.readFileSync(clSrc, 'utf8')), SRC));
 pages.push({ rel: updateLogRel, title: '更新日志', body: clBody });
 
 for (let i = 0; i < pages.length; i++) {
