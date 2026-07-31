@@ -32,4 +32,6 @@ jobs:
       - name: Bump build to trigger CF Pages
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
+          git config user.name "xiaopi668"
+          git config user.email "xiaopi668@users.noreply.github.com"
           git commit --allow-empty -m "Trigger CF Pages rebuild" && git push origin main
