@@ -14,6 +14,7 @@
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
 body {
   font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", -apple-system, "Segoe UI", sans-serif;
   background: var(--bg);
@@ -24,6 +25,37 @@ body {
 ::selection { background: rgba(46, 196, 246, 0.3); color: #fff; }
 a { color: var(--accent-2); text-decoration: none; }
 a:hover { text-decoration: underline; }
+
+/* ===== 移动端导航按钮 ===== */
+.menu-btn { display: none; }
+@media (max-width: 940px) {
+  .menu-btn {
+    display: flex; align-items: center; justify-content: center;
+    position: fixed; top: 14px; left: 14px; z-index: 98;
+    width: 42px; height: 42px;
+    background: rgba(17, 21, 31, 0.92);
+    border: 1px solid var(--border); border-radius: 10px;
+    color: var(--text); font-size: 1.15rem; cursor: pointer;
+    backdrop-filter: blur(6px);
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .menu-btn:hover { border-color: var(--accent); color: #fff; }
+  .sidebar {
+    position: fixed !important; top: 0 !important; left: 0; bottom: 0;
+    max-height: none !important;
+    width: min(86vw, 320px);
+    border-radius: 0 12px 12px 0;
+    transform: translateX(-105%);
+    transition: transform 0.25s ease;
+    z-index: 97;
+  }
+  body.menu-open .sidebar { transform: none; box-shadow: 0 0 60px rgba(0, 0, 0, 0.6); }
+  .hero.mini { padding-left: 64px; }
+  .hero.mini .crumbs { display: none; }
+  .github-corner { top: 14px; right: 14px; padding: 7px 12px; font-size: 0.75rem; }
+  .github-corner svg { width: 15px; height: 15px; }
+  .hero.mini .brand { padding-right: 96px; }
+}
 
 /* ===== 入场动画 ===== */
 @keyframes fadeUp {
@@ -136,8 +168,7 @@ a:hover { text-decoration: underline; }
   align-items: start;
 }
 @media (max-width: 940px) {
-  .layout { grid-template-columns: 1fr; }
-  .sidebar { position: static !important; max-height: none !important; }
+  .layout { grid-template-columns: 1fr; padding: 20px 14px 60px; }
   .hero h1 { font-size: 1.5rem; }
 }
 
@@ -160,8 +191,8 @@ a:hover { text-decoration: underline; }
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 0.88rem;
-  outline: none;
   margin-bottom: 10px;
+  transition: border-color 0.15s;
 }
 .sb-search input:focus { border-color: var(--accent); }
 .sb-tip {
@@ -217,15 +248,6 @@ a:hover { text-decoration: underline; }
   border-radius: 0 6px 6px 0;
 }
 
-.sb-list a.sb-node {
-  margin-top: 8px;
-  padding: 5px 10px;
-  color: var(--accent-2);
-  font-weight: 700;
-  background: linear-gradient(90deg, rgba(23,147,209,0.10), transparent);
-  border-left: 2px solid var(--accent);
-}
-.sb-list a.sb-node:hover { background: var(--bg-3); padding-left: 10px; }
 .sb-list a.sb-child { padding-left: 20px; }
 .sb-list a.sb-child::before { left: 12px; }
 .sb-list a.sb-child:hover { padding-left: 22px; }
@@ -265,15 +287,6 @@ main { min-width: 0; }
 .markdown-body ul, .markdown-body ol { margin: 0.8em 0 0.8em 1.6em; }
 .markdown-body li { margin: 0.3em 0; }
 .markdown-body li > ul, .markdown-body li > ol { margin: 0.2em 0 0.2em 1.4em; }
-.markdown-body blockquote {
-  border-left: 3px solid var(--accent);
-  background: rgba(23,147,209,0.07);
-  padding: 10px 16px;
-  border-radius: 0 8px 8px 0;
-  margin: 1em 0;
-  color: var(--text-dim);
-}
-.markdown-body blockquote strong { color: var(--text); }
 .markdown-body code {
   background: var(--bg-3);
   border: 1px solid var(--border);
@@ -465,6 +478,15 @@ main { min-width: 0; }
 .markdown-body pre:hover .copy-btn { opacity: 1; }
 .copy-btn:hover { background: rgba(255,255,255,0.14); color: var(--text); }
 .copy-btn.copied { background: rgba(76,175,80,0.2); border-color: rgba(76,175,80,0.5); color: #7edb87; }
+@media (hover: none) { .copy-btn { opacity: 1; } }
+
+/* ===== 打印 ===== */
+@media print {
+  .sidebar, .github-corner, .menu-btn, .pn, .page-foot, .contact-card, .copy-btn, .hero { display: none !important; }
+  body { background: #fff; color: #000; }
+  .markdown-body { background: none; border: none; padding: 0; }
+  .layout { padding: 0; display: block; }
+}
 
 .contact-card {
   margin: 2.2em 0 1em;

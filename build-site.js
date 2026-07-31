@@ -77,7 +77,33 @@ function rewriteMarkdown(text, mdSrcDir) {
   });
   text = text.replace(/<a href="https:\/\/star-history\.com\/[^"]*"[^>]*>[\s\S]*?<\/a>/,
     `[![GitHub Stars](https://img.shields.io/github/stars/${REPO})](https://github.com/${REPO}) [![GitHub Forks](https://img.shields.io/github/forks/${REPO})](https://github.com/${REPO}) [查看 Star 历史 ↗](https://star-history.com/#${REPO}&Date)`);
+  // 上游原文修正（exfat-utils 已被 Arch 官方仓库移除等）
+  text = text
+    .replace(/exfat-utils/g, 'exfatprogs')
+    .replace(/AM4（7000系）/g, 'AM5（7000系）')
+    .replace(/的的写法/g, '的写法')
+    .replace(/配置配置文件/g, '配置文件')
+    .replace(/把日志等级为 5/g, '把日志等级设为 5')
+    .replace(/exp从\/boot/g, 'ESP 从 /boot')
+    .replace(/<details close>/g, '<details>');
   return text;
+}
+
+// 更新日志美化：纯文本行 -> ## 日期 + 列表条目
+function beautifyChangelog(text) {
+  const out = [];
+  for (const raw of text.split('\n')) {
+    const l = raw.trim();
+    if (!l || l === 'gitee' || l === '更新日志：') continue;
+    const dm = l.match(/^(\d{4})[.\-/](\d{1,2})[.\-/](\d{1,2})/);
+    if (dm) {
+      out.push(`## ${dm[1]}-${dm[2].padStart(2, '0')}-${dm[3].padStart(2, '0')}`);
+      const rest = l.slice(dm[0].length).trim();
+      if (rest) out.push(`- ${rest.replace(/^[-*\s]+/, '')}`);
+    }
+    else out.push(`- ${l.replace(/^[-*\s]+/, '')}`);
+  }
+  return out.join('\n');
 }
 
 // ---------- build site ----------
@@ -96,13 +122,13 @@ fs.writeFileSync(path.join(OUT, '_redirects'),
 // ---------- nav ----------
 const ARCH_TREE = [
   { label: '① 安装系统', entry: '安装ArchLinux.md', items: ['手动安装省流版.md', '安装桌面环境前的准备.md'] },
-  { label: '② 选择桌面环境', entry: '安装桌面环境或窗口管理器.md', items: ['安装GNOME.md', '安装KDE.md', '安装Niri.md', '安装Labwc.md', '安装Wayfire.md'] },
+  { label: '② 选择桌面环境', entry: '安装桌面环境或窗口管理器.md', items: ['一键配置桌面环境.md', '安装GNOME.md', '安装KDE.md', '安装Niri.md', '安装Labwc.md', '安装Wayfire.md'] },
   { label: '③ 配置显卡', entry: '显卡驱动和硬件编解码.md', items: ['显卡切换.md', '热切换显卡直通.md'] },
   { label: '④ 基础配置', entry: '中文输入法.md', items: ['代理.md', '软件安装相关.md', '快照和系统维护.md'] },
   { label: '⑤ 桌面美化', entry: '我的GNOME自定义设置.md', items: ['我的KDE自定义设置.md', 'ShorinNiri功能介绍.md', '终端美化.md', 'grub美化.md'] },
   { label: '⑥ 性能优化', entry: '性能优化.md', items: ['小技巧.md'] },
   { label: '⑦ 虚拟化与游戏', entry: '虚拟机.md', items: ['KVM虚拟机.md', '玩游戏.md'] },
-  { label: '⑧ 其他', entry: '附录.md', items: ['常见争议澄清.md', 'issues.md', 'Arch部署Astrbot.md'] }
+  { label: '⑧ 其他', entry: '附录.md', items: ['常见争议澄清.md', 'issues.md', 'Arch部署Astrbot.md', '交流群.md'] }
 ];
 
 const orderArch = ARCH_TREE.map(n => [n.entry].concat(n.items)).flat();
@@ -139,7 +165,7 @@ const css = fs.readFileSync(path.join(__dirname, 'site.css'), 'utf8');
 const LOGO_B64 = fs.readFileSync(path.join(SRC, 'pictures/shorinarch.png')).toString('base64');
 const LOGO_DATA = `data:image/png;base64,${LOGO_B64}`;
 
-function sidebar(current, prefix) {
+function sidebar(current) {
   let h = '<div class="sb-search"><input id="sbSearch" type="text" placeholder="🔍 搜索章节..."></div>';
   h += '<h3 class="sb-tip">目录导航</h3><div class="sb-list" id="sbList">';
   h += `<a href="/index.html" class="${current === 'index.html' ? 'cur' : ''}">🏠 首页 / 项目简介</a>`;
@@ -169,6 +195,7 @@ function page(rel, title, bodyHtml, current, prev, next) {
   const isHome = rel === 'index.html';
   const depth = rel.split('/').length - 1;
   const prefix = depth ? '../'.repeat(depth) : '';
+  const groupLabel = groups.find(g => g.items.some(it => it.rel === current))?.label || '';
   const hero = isHome ? `
   <header class="hero">
     <img class="logo" src="${LOGO_DATA}" alt="SHORiNのARCH Logo">
@@ -184,18 +211,27 @@ function page(rel, title, bodyHtml, current, prev, next) {
   </header>` : `
   <header class="hero mini">
     <a class="brand" href="/index.html"><img src="${LOGO_DATA}" alt="logo"> SHORiNのARCH</a>
-    <div class="crumbs">${title}</div>
+    <div class="crumbs">首页 › ${groupLabel}</div>
   </header>`;
   const pn = (prev || next) ? `<nav class="pn">
     ${prev ? `<a class="prev" href="/${prev.rel}">← ${prev.title}</a>` : '<span></span>'}
     ${next ? `<a class="next" href="/${next.rel}">${next.title} →</a>` : ''}
   </nav>` : '';
+  // 正文首个 h1 与 page-title 重复时去掉（保留行为准则等特殊 h1）
+  if (!isHome) {
+    bodyHtml = bodyHtml.replace(/^\s*<h1[^>]*>([\s\S]*?)<\/h1>\s*/, (m, inner) => {
+      const t = inner.replace(/<[^>]*>/g, '').trim();
+      return t === title ? '' : m;
+    });
+  }
   return `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="${isHome ? '【2026 最适合新手的 Arch Linux 教程】系统安装 · 双系统 · N卡驱动 · 桌面环境 · 中文输入法 · 玩游戏 · 虚拟机 · 显卡直通' : title + ' - SHORiNのARCH'}">
 <title>${title} - SHORiNのARCH</title>
+<link rel="icon" href="${LOGO_DATA}">
 <style>${css}</style>
 </head>
 <body>
@@ -203,9 +239,10 @@ function page(rel, title, bodyHtml, current, prev, next) {
   <svg viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
   GitHub
 </a>
+<button id="menuBtn" class="menu-btn" type="button" aria-label="打开导航">☰</button>
 ${hero}
 <div class="layout">
-  <nav class="sidebar">${sidebar(current, prefix)}</nav>
+  <nav class="sidebar">${sidebar(current)}</nav>
   <main>
     ${isHome ? '' : `<h1 class="page-title">${title}</h1>`}
     <article class="markdown-body">${bodyHtml}</article>
@@ -222,7 +259,7 @@ document.getElementById('sbSearch').addEventListener('input', e => {
   document.querySelectorAll('#sbList > .group.step').forEach(step => {
     let visible = false;
     let el = step.nextElementSibling;
-    while (el && !el.classList.contains('group')) {
+    while (el && !(el.classList.contains('group') && !el.classList.contains('step'))) {
       if (el.style.display !== 'none') { visible = true; break; }
       el = el.nextElementSibling;
     }
@@ -231,13 +268,24 @@ document.getElementById('sbSearch').addEventListener('input', e => {
   document.querySelectorAll('#sbList > .group:not(.step)').forEach(group => {
     let visible = false;
     let el = group.nextElementSibling;
-    while (el && !el.classList.contains('group')) {
+    while (el && !(el.classList.contains('group') && !el.classList.contains('step'))) {
       if (el.style.display !== 'none') { visible = true; break; }
       el = el.nextElementSibling;
     }
     group.style.display = visible ? '' : 'none';
   });
 });
+const menuBtn = document.getElementById('menuBtn');
+if (menuBtn) {
+  menuBtn.addEventListener('click', () => {
+    const open = document.body.classList.toggle('menu-open');
+    menuBtn.textContent = open ? '✕' : '☰';
+  });
+  document.querySelectorAll('.sidebar a').forEach(a => a.addEventListener('click', () => {
+    document.body.classList.remove('menu-open');
+    menuBtn.textContent = '☰';
+  }));
+}
 document.querySelectorAll('.markdown-body pre').forEach(pre => {
   const btn = document.createElement('button');
   btn.className = 'copy-btn';
@@ -306,8 +354,8 @@ let readmeText = fs.readFileSync(path.join(SRC, 'README.md'), 'utf8')
   .replace(/^.*img\.shields\.io\/badge\/Bilibili.*$/m, '')
   .replace(/^.*img\.shields\.io\/badge\/Platform.*$/m, '')
   .replace(/^.*img\.shields\.io\/github\/license.*$/m, '')
-  .replace(/<div align="center">\s*<\/div>/gi, '')
   .replace(/<br\s*\/?>\s*<br\s*\/?>/g, '')
+  .replace(/<div align="center">(?:\s*<br\s*\/?>)*\s*<\/div>/gi, '')
   .replace(/<p[^>]*>\s*<\/p>/gi, '')
   .replace(/<p[^>]*>\s*<\/p>/gi, '')
   .replace(/\[!\[SHORiNのARCH Logo\]\([^)]*\)\]\([^)]*\)\n?/, '');
@@ -320,14 +368,14 @@ const contactCard = `<div class="contact-card">
 </div>`;
 pages.push({ rel: 'index.html', title: 'SHORiNのARCH · Arch Linux Guide', body: readmeBody + contactCard });
 slugCounts = {};
-const clBody = marked.parse(rewriteMarkdown(fs.readFileSync(path.join(SRC, '更新日志.md'), 'utf8'), SRC));
+const clBody = marked.parse(rewriteMarkdown(beautifyChangelog(fs.readFileSync(path.join(SRC, '更新日志.md'), 'utf8')), SRC));
 pages.push({ rel: updateLogRel, title: '更新日志', body: clBody });
 
 for (let i = 0; i < pages.length; i++) {
   const cur = pages[i];
-  const prev = i > 0 && cur.rel !== 'index.html' ? pages[i - 1] : null;
+  const prev = i > 0 && cur.rel !== 'index.html' ? [...pages.slice(0, i)].reverse().find(p => p.rel !== 'index.html') || null : null;
   const next = cur.rel === 'index.html' ? flat.find(f => f.rel === 'wiki/Home.html')
-    : (cur.rel === updateLogRel ? null : pages[i + 1] || null);
+    : (cur.rel === updateLogRel ? null : pages.slice(i + 1).find(p => p.rel !== 'index.html') || null);
   fs.writeFileSync(path.join(OUT, cur.rel), page(cur.rel, cur.title, cur.body, cur.rel, prev, next));
 }
 
