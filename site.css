@@ -260,6 +260,7 @@ main { min-width: 0; }
   overflow-wrap: break-word;
 }
 .markdown-body pre {
+  position: relative;
   background: var(--code-bg);
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -427,3 +428,14 @@ main { min-width: 0; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--bg-3); border-radius: 5px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--border); }
+
+.copy-btn {
+  position: absolute; top: 8px; right: 8px; z-index: 2;
+  padding: 3px 10px; font-size: 12px; cursor: pointer;
+  color: var(--text-dim); background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 6px;
+  opacity: 0; transition: opacity .2s, background .2s, color .2s;
+}
+.markdown-body pre:hover .copy-btn { opacity: 1; }
+.copy-btn:hover { background: rgba(255,255,255,0.14); color: var(--text); }
+.copy-btn.copied { background: rgba(76,175,80,0.2); border-color: rgba(76,175,80,0.5); color: #7edb87; }

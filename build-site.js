@@ -197,6 +197,28 @@ document.getElementById('sbSearch').addEventListener('input', e => {
     a.style.display = !q || (a.textContent + ' ' + (a.title || '')).toLowerCase().includes(q) ? '' : 'none';
   });
 });
+document.querySelectorAll('.markdown-body pre').forEach(pre => {
+  const btn = document.createElement('button');
+  btn.className = 'copy-btn';
+  btn.type = 'button';
+  btn.textContent = '复制';
+  btn.addEventListener('click', async () => {
+    const text = (pre.querySelector('code') || pre).innerText;
+    try { await navigator.clipboard.writeText(text); }
+    catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+    }
+    btn.textContent = '✓ 已复制';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '复制'; btn.classList.remove('copied'); }, 2000);
+  });
+  pre.appendChild(btn);
+});
 </script>
 </body>
 </html>`;
