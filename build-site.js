@@ -122,7 +122,7 @@ const updateLogRel = '更新日志.html';
 flat.push({ title: '更新日志', rel: updateLogRel });
 
 // ---------- template ----------
-const css = fs.readFileSync('/tmp/opencode/site.css', 'utf8');
+const css = fs.readFileSync(path.join(__dirname, 'site.css'), 'utf8');
 const LOGO_B64 = fs.readFileSync(path.join(SRC, 'pictures/shorinarch.png')).toString('base64');
 const LOGO_DATA = `data:image/png;base64,${LOGO_B64}`;
 
