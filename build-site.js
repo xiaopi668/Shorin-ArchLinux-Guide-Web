@@ -147,10 +147,8 @@ function sidebar(current, prefix) {
     h += `<div class="group">${g.icon} ${g.label}</div>`;
     if (g.tree) {
       for (const node of g.tree) {
-        const e = g.items.find(it => it.name === node.entry);
-        const isCur = e && current === e.rel;
-        h += `<a class="sb-node${isCur ? ' cur' : ''}" href="/${e.rel}" title="${e ? e.title : ''}">${node.label}</a>`;
-        for (const name of node.items) {
+        h += `<div class="group sub">${node.label}</div>`;
+        for (const name of [node.entry].concat(node.items)) {
           const it = g.items.find(x => x.name === name);
           if (it) h += `<a class="sb-child${current === it.rel ? ' cur' : ''}" href="/${it.rel}" title="${it.title}">${it.title}</a>`;
         }
