@@ -201,7 +201,10 @@ document.querySelectorAll('.markdown-body pre').forEach(pre => {
   const btn = document.createElement('button');
   btn.className = 'copy-btn';
   btn.type = 'button';
-  btn.textContent = '复制';
+  btn.title = '复制';
+  const icon = '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M3 9.5V3.5a.5.5 0 0 1 .5-.5h6"/></svg>';
+  const iconOk = '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.5 8.5l3 3 6-6.5"/></svg>';
+  btn.innerHTML = icon;
   btn.addEventListener('click', async () => {
     const text = (pre.querySelector('code') || pre).innerText;
     try { await navigator.clipboard.writeText(text); }
@@ -213,9 +216,10 @@ document.querySelectorAll('.markdown-body pre').forEach(pre => {
       document.execCommand('copy');
       ta.remove();
     }
-    btn.textContent = '✓ 已复制';
+    btn.innerHTML = iconOk;
     btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = '复制'; btn.classList.remove('copied'); }, 2000);
+    btn.title = '已复制';
+    setTimeout(() => { btn.innerHTML = icon; btn.classList.remove('copied'); btn.title = '复制'; }, 2000);
   });
   pre.appendChild(btn);
 });

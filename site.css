@@ -431,7 +431,8 @@ main { min-width: 0; }
 
 .copy-btn {
   position: absolute; top: 8px; right: 8px; z-index: 2;
-  padding: 3px 10px; font-size: 12px; cursor: pointer;
+  width: 28px; height: 28px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
   color: var(--text-dim); background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.15); border-radius: 6px;
   opacity: 0; transition: opacity .2s, background .2s, color .2s;
