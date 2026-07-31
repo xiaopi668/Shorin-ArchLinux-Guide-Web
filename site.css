@@ -205,10 +205,16 @@ a:hover { text-decoration: underline; }
   text-transform: uppercase;
 }
 
-.sb-list .group.sub {
-  margin: 10px 4px 2px 10px;
-  font-size: 0.68rem; color: var(--text-dim);
-  text-transform: none; letter-spacing: 0;
+.sb-list .group.step {
+  margin: 12px 4px 4px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  color: var(--accent-2);
+  font-weight: 700;
+  letter-spacing: .5px;
+  background: linear-gradient(90deg, rgba(23,147,209,0.12), transparent);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 6px 6px 0;
 }
 
 .sb-list a.sb-node {
