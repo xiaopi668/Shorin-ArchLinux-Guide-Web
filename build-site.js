@@ -53,11 +53,15 @@ function rewriteUrl(url, mdSrcDir) {
   try { u = decodeURIComponent(u); } catch (e) {}
   const [file, anchor] = u.split('#');
   if (!file) return url;
-  const target = path.resolve(mdSrcDir, file);
+  let target = path.resolve(mdSrcDir, file);
+  if (!fs.existsSync(target)) {
+    const norm = path.normalize(file).replace(/^(\.\.\/)+/, '');
+    target = path.resolve(SRC, norm);
+  }
   if (fs.existsSync(target)) {
-    let rel = path.relative(mdSrcDir, target).split(path.sep).join('/');
+    let rel = path.relative(SRC, target).split(path.sep).join('/');
     if (file.endsWith('.md')) rel = rel.replace(/\.md$/, '.html');
-    return anchor ? `${rel}#${anchor}` : rel;
+    return anchor ? `/${rel}#${anchor}` : `/${rel}`;
   }
   return url;
 }
@@ -118,7 +122,7 @@ function buildGroup(srcDir, order, label, icon, outDir, titleFromName, exclude, 
 
 const groups = [];
 groups.push(buildGroup(path.join(SRC, 'wiki'), orderRoot, '通用', '🧭', path.join(OUT, 'wiki')));
-groups.push(buildGroup(path.join(SRC, 'wiki/archlinux'), orderArch, 'Arch Linux', '🐉', path.join(OUT, 'wiki/archlinux'), true, ['交流群.md'], ARCH_SUBGROUPS));
+groups.push(buildGroup(path.join(SRC, 'wiki/archlinux'), orderArch, 'Arch Linux', '🐉', path.join(OUT, 'wiki/archlinux'), true, [], ARCH_SUBGROUPS));
 groups.push(buildGroup(path.join(SRC, 'wiki/linuxmint'), [], 'Linux Mint', '🌿', path.join(OUT, 'wiki/linuxmint')));
 groups.push(buildGroup(path.join(SRC, 'wiki/cachyos'), [], 'CachyOS', '🚀', path.join(OUT, 'wiki/cachyos')));
 
@@ -135,7 +139,7 @@ const LOGO_DATA = `data:image/png;base64,${LOGO_B64}`;
 function sidebar(current, prefix) {
   let h = '<div class="sb-search"><input id="sbSearch" type="text" placeholder="🔍 搜索章节..."></div>';
   h += '<h3 class="sb-tip">目录导航</h3><div class="sb-list" id="sbList">';
-  h += `<a href="${prefix}index.html" class="${current === 'index.html' ? 'cur' : ''}">🏠 首页 / 项目简介</a>`;
+  h += `<a href="/index.html" class="${current === 'index.html' ? 'cur' : ''}">🏠 首页 / 项目简介</a>`;
   for (const g of groups) {
     h += `<div class="group">${g.icon} ${g.label}</div>`;
     if (g.subs) {
@@ -143,18 +147,18 @@ function sidebar(current, prefix) {
         h += `<div class="group sub">${subLabel}</div>`;
         for (const it of g.items) {
           if (names.includes(it.name)) {
-            h += `<a href="${prefix}${it.rel}" title="${it.title}" class="${current === it.rel ? 'cur' : ''}">${it.title}</a>`;
+            h += `<a href="/${it.rel}" title="${it.title}" class="${current === it.rel ? 'cur' : ''}">${it.title}</a>`;
           }
         }
       }
     } else {
       for (const it of g.items) {
-        h += `<a href="${prefix}${it.rel}" title="${it.title}" class="${current === it.rel ? 'cur' : ''}">${it.title}</a>`;
+        h += `<a href="/${it.rel}" title="${it.title}" class="${current === it.rel ? 'cur' : ''}">${it.title}</a>`;
       }
     }
   }
   h += '<div class="group">其他</div>';
-  h += `<a href="${prefix}${updateLogRel}" class="${current === updateLogRel ? 'cur' : ''}">更新日志</a>`;
+  h += `<a href="/${updateLogRel}" class="${current === updateLogRel ? 'cur' : ''}">更新日志</a>`;
   h += `<a href="https://github.com/SHORiN-KiWATA/Shorin-ArchLinux-Guide" target="_blank">GitHub 仓库 ↗</a></div>`;
   return h;
 }
@@ -177,12 +181,12 @@ function page(rel, title, bodyHtml, current, prev, next) {
     </div>
   </header>` : `
   <header class="hero mini">
-    <a class="brand" href="${prefix}index.html"><img src="${LOGO_DATA}" alt="logo"> SHORiNのARCH</a>
+    <a class="brand" href="/index.html"><img src="${LOGO_DATA}" alt="logo"> SHORiNのARCH</a>
     <div class="crumbs">${title}</div>
   </header>`;
   const pn = (prev || next) ? `<nav class="pn">
-    ${prev ? `<a class="prev" href="${prefix}${prev.rel}">← ${prev.title}</a>` : '<span></span>'}
-    ${next ? `<a class="next" href="${prefix}${next.rel}">${next.title} →</a>` : ''}
+    ${prev ? `<a class="prev" href="/${prev.rel}">← ${prev.title}</a>` : '<span></span>'}
+    ${next ? `<a class="next" href="/${next.rel}">${next.title} →</a>` : ''}
   </nav>` : '';
   return `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -204,7 +208,7 @@ ${hero}
     ${isHome ? '' : `<h1 class="page-title">${title}</h1>`}
     <article class="markdown-body">${bodyHtml}</article>
     ${pn}
-    <footer class="page-foot">SHORiNのARCH · Shorin-ArchLinux-Guide — 以 <a href="${prefix}LICENSE">CC-BY-SA-4.0</a> 许可发布 · <a href="https://github.com/SHORiN-KiWATA/Shorin-ArchLinux-Guide" target="_blank">GitHub 仓库 ↗</a></footer>
+    <footer class="page-foot">SHORiNのARCH · Shorin-ArchLinux-Guide — 以 <a href="/LICENSE">CC-BY-SA-4.0</a> 许可发布 · <a href="https://github.com/SHORiN-KiWATA/Shorin-ArchLinux-Guide" target="_blank">GitHub 仓库 ↗</a></footer>
   </main>
 </div>
 <script>
