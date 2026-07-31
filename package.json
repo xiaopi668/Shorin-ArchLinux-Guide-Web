@@ -1,0 +1,11 @@
+{
+  "name": "shorin-archlinux-guide-web",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "node build-site.js"
+  },
+  "dependencies": {
+    "marked": "^18.0.7"
+  }
+}

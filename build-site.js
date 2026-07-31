@@ -1,9 +1,9 @@
 const fs = require('fs');
 const path = require('path');
-const { marked } = require('/tmp/opencode/node_modules/marked');
+const { marked } = require('marked');
 
-const SRC = '/tmp/opencode/Shorin-ArchLinux-Guide';
-const OUT = '/home/xiaopi/Projects/shorin-arch-guide';
+const SRC = process.env.SITE_SRC || __dirname;
+const OUT = process.env.SITE_OUT || path.join(__dirname, 'dist');
 const REPO = 'SHORiN-KiWATA/Shorin-ArchLinux-Guide';
 const BLOB_RE = new RegExp(`https://github\\.com/${REPO}/blob/main/`, 'g');
 
