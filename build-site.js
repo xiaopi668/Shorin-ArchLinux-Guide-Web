@@ -89,6 +89,9 @@ for (const dir of ['pictures', 'wallpapers', 'wiki']) {
 }
 fs.copyFileSync(path.join(SRC, 'pictures/shorinarch.png'), path.join(OUT, 'shorinarch.png'));
 fs.copyFileSync(path.join(SRC, 'LICENSE'), path.join(OUT, 'LICENSE'));
+fs.writeFileSync(path.join(OUT, '_redirects'),
+  '/wiki/wiki/wiki/* /wiki/:splat 301\n' +
+  '/wiki/wiki/* /wiki/:splat 301\n');
 
 // ---------- nav ----------
 const ARCH_SUBGROUPS = [
