@@ -228,6 +228,15 @@ document.getElementById('sbSearch').addEventListener('input', e => {
     }
     step.style.display = visible ? '' : 'none';
   });
+  document.querySelectorAll('#sbList > .group:not(.step)').forEach(group => {
+    let visible = false;
+    let el = group.nextElementSibling;
+    while (el && !el.classList.contains('group')) {
+      if (el.style.display !== 'none') { visible = true; break; }
+      el = el.nextElementSibling;
+    }
+    group.style.display = visible ? '' : 'none';
+  });
 });
 document.querySelectorAll('.markdown-body pre').forEach(pre => {
   const btn = document.createElement('button');
