@@ -446,3 +446,28 @@ main { min-width: 0; }
 .markdown-body pre:hover .copy-btn { opacity: 1; }
 .copy-btn:hover { background: rgba(255,255,255,0.14); color: var(--text); }
 .copy-btn.copied { background: rgba(76,175,80,0.2); border-color: rgba(76,175,80,0.5); color: #7edb87; }
+
+.contact-card {
+  margin: 2.2em 0 1em;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, rgba(23,147,209,0.12), rgba(46,196,246,0.05));
+  border: 1px solid rgba(23,147,209,0.35);
+  border-radius: 12px;
+}
+.contact-card h2 { margin: 0 0 10px; font-size: 1.25rem; color: var(--accent-2); }
+.contact-card p { margin: 8px 0; color: var(--text-dim); }
+.contact-card a { color: var(--accent-2); }
+.qq-group {
+  display: inline-flex; align-items: center; gap: 10px;
+  margin: 6px 0;
+  padding: 8px 16px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text); font-size: 1.05rem;
+}
+.qq-group b { color: var(--accent-2); letter-spacing: 1px; }
+.qq-group .copy-btn {
+  position: static; opacity: 1;
+  width: 26px; height: 26px;
+}

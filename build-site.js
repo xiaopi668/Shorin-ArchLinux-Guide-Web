@@ -154,7 +154,6 @@ function sidebar(current, prefix) {
     }
   }
   h += '<div class="group">其他</div>';
-  h += `<a href="${prefix}wiki/archlinux/交流群.html" class="${current === 'wiki/archlinux/交流群.html' ? 'cur' : ''}">交流群</a>`;
   h += `<a href="${prefix}${updateLogRel}" class="${current === updateLogRel ? 'cur' : ''}">更新日志</a>`;
   h += `<a href="https://github.com/SHORiN-KiWATA/Shorin-ArchLinux-Guide" target="_blank">GitHub 仓库 ↗</a></div>`;
   return h;
@@ -241,6 +240,25 @@ document.querySelectorAll('.markdown-body pre').forEach(pre => {
   });
   pre.appendChild(btn);
 });
+const qqCopy = document.getElementById('qqCopy');
+if (qqCopy) qqCopy.addEventListener('click', async () => {
+  const text = document.getElementById('qqNum').textContent;
+  try { await navigator.clipboard.writeText(text); }
+  catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+  }
+  qqCopy.classList.add('copied');
+  qqCopy.innerHTML = '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.5 8.5l3 3 6-6.5"/></svg>';
+  setTimeout(() => {
+    qqCopy.classList.remove('copied');
+    qqCopy.innerHTML = '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M3 9.5V3.5a.5.5 0 0 1 .5-.5h6"/></svg>';
+  }, 2000);
+});
 </script>
 </body>
 </html>`;
@@ -270,7 +288,13 @@ let readmeText = fs.readFileSync(path.join(SRC, 'README.md'), 'utf8')
   .replace(/<p[^>]*>\s*<\/p>/gi, '')
   .replace(/\[!\[SHORiNのARCH Logo\]\([^)]*\)\]\([^)]*\)\n?/, '');
 const readmeBody = marked.parse(rewriteMarkdown(readmeText, SRC));
-pages.push({ rel: 'index.html', title: 'SHORiNのARCH · Arch Linux Guide', body: readmeBody });
+const contactCard = `<div class="contact-card">
+  <h2>💬 交流群</h2>
+  <p>遇到问题需要帮助？欢迎加入作者的 Arch QQ 交流群：</p>
+  <div class="qq-group">QQ 群号：<b id="qqNum">130515298</b><button class="copy-btn" id="qqCopy" type="button" title="复制"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M3 9.5V3.5a.5.5 0 0 1 .5-.5h6"/></svg></button></div>
+  <p>提问前建议先阅读 <a href="https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way" target="_blank">提问的智慧</a>，学会清晰描述问题。</p>
+</div>`;
+pages.push({ rel: 'index.html', title: 'SHORiNのARCH · Arch Linux Guide', body: readmeBody + contactCard });
 slugCounts = {};
 const clBody = marked.parse(rewriteMarkdown(fs.readFileSync(path.join(SRC, '更新日志.md'), 'utf8'), SRC));
 pages.push({ rel: updateLogRel, title: '更新日志', body: clBody });
