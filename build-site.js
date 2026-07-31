@@ -43,7 +43,7 @@ function walk(dir, list = []) {
 
 function firstTitle(md) {
   const m = md.match(/^# (.+)$/m) || md.match(/^## (.+)$/m);
-  return m ? m[1].replace(/[*`]/g, '').trim() : '';
+  return m ? m[1].replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/[*`]/g, '').trim() : '';
 }
 
 // rewrite a url found in markdown at mdSrcDir (absolute, in SRC tree)
@@ -95,6 +95,8 @@ const orderArch = ['安装ArchLinux.md', '手动安装省流版.md', '安装桌�
   '性能优化.md', '小技巧.md', 'issues.md', '附录.md', '交流群.md', 'Arch部署Astrbot.md', '常见争议澄清.md'];
 const orderRoot = ['Home.md', '安装任意Linux系统的前期准备工作.md', '活用AI.md', '干净删除Linux.md'];
 
+const TITLE_OVERRIDES = { '安装ArchLinux.md': '安装ArchLinux' };
+
 function buildGroup(srcDir, order, label, icon, outDir) {
   const files = fs.readdirSync(srcDir).filter(f => f.endsWith('.md'));
   files.sort((a, b) => {
@@ -103,7 +105,7 @@ function buildGroup(srcDir, order, label, icon, outDir) {
   });
   const items = files.map(name => {
     const md = fs.readFileSync(path.join(srcDir, name), 'utf8');
-    const title = firstTitle(md) || name.replace('.md', '');
+    const title = TITLE_OVERRIDES[name] || firstTitle(md) || name.replace('.md', '');
     const rel = path.relative(OUT, path.join(outDir, name.replace('.md', '.html'))).split(path.sep).join('/');
     return { name, title, rel, md, srcDir };
   });
