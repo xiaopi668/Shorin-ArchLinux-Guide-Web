@@ -219,6 +219,15 @@ document.getElementById('sbSearch').addEventListener('input', e => {
   document.querySelectorAll('#sbList > a').forEach(a => {
     a.style.display = !q || (a.textContent + ' ' + (a.title || '')).toLowerCase().includes(q) ? '' : 'none';
   });
+  document.querySelectorAll('#sbList > .group.step').forEach(step => {
+    let visible = false;
+    let el = step.nextElementSibling;
+    while (el && !el.classList.contains('group')) {
+      if (el.style.display !== 'none') { visible = true; break; }
+      el = el.nextElementSibling;
+    }
+    step.style.display = visible ? '' : 'none';
+  });
 });
 document.querySelectorAll('.markdown-body pre').forEach(pre => {
   const btn = document.createElement('button');
