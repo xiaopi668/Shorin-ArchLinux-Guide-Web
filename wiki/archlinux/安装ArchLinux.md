@@ -627,7 +627,7 @@ passwd
 
    - 显示开机日志
 
-     `GRUB_CMDLINE_LINUX_DEFAULT` 里面去掉 `quiet` 以显示开机日志。再设置 `loglevel=5` 把日志等级为 5。`loglevel` 共 7 级，5 级是一个信息量的平衡点。
+     `GRUB_CMDLINE_LINUX_DEFAULT` 里面去掉 `quiet` 以显示开机日志。再把 `loglevel` 日志等级设置为 5。`loglevel` 共 7 级，5 级是一个信息量的平衡点。
 
    - 禁用 watchdog
 
