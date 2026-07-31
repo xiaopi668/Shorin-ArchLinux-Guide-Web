@@ -92,7 +92,7 @@ const orderArch = ['安装ArchLinux.md', '手动安装省流版.md', '安装桌�
   '一键配置桌面环境.md', '安装GNOME.md', '安装KDE.md', '安装Niri.md', '安装Labwc.md',
   '中文输入法.md', '软件安装相关.md', '代理.md', '我的GNOME自定义设置.md', '我的KDE自定义设置.md',
   '终端美化.md', 'grub美化.md', '显卡切换.md', '虚拟机.md', 'KVM虚拟机.md', '玩游戏.md',
-  '性能优化.md', '小技巧.md', 'issues.md', '附录.md', '交流群.md', 'Arch部署Astrbot.md', '常见争议澄清.md'];
+  '性能优化.md', '小技巧.md', 'issues.md', 'Arch部署Astrbot.md', '常见争议澄清.md', '附录.md'];
 const orderRoot = ['Home.md', '安装任意Linux系统的前期准备工作.md', '活用AI.md', '干净删除Linux.md'];
 
 function buildGroup(srcDir, order, label, icon, outDir, titleFromName) {
@@ -137,6 +137,7 @@ function sidebar(current, prefix) {
     }
   }
   h += '<div class="group">其他</div>';
+  h += `<a href="${prefix}wiki/archlinux/交流群.html" class="${current === 'wiki/archlinux/交流群.html' ? 'cur' : ''}">交流群</a>`;
   h += `<a href="${prefix}${updateLogRel}" class="${current === updateLogRel ? 'cur' : ''}">更新日志</a>`;
   h += `<a href="https://github.com/SHORiN-KiWATA/Shorin-ArchLinux-Guide" target="_blank">GitHub 仓库 ↗</a></div>`;
   return h;
