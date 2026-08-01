@@ -258,8 +258,8 @@ document.getElementById('sbSearch').addEventListener('input', e => {
   document.querySelectorAll('#sbList > .group.step').forEach(step => {
     let visible = false;
     let el = step.nextElementSibling;
-    while (el && !(el.classList.contains('group') && !el.classList.contains('step'))) {
-      if (el.style.display !== 'none') { visible = true; break; }
+    while (el && !el.classList.contains('group')) {
+      if (el.tagName === 'A' && el.style.display !== 'none') { visible = true; break; }
       el = el.nextElementSibling;
     }
     step.style.display = visible ? '' : 'none';
@@ -268,7 +268,7 @@ document.getElementById('sbSearch').addEventListener('input', e => {
     let visible = false;
     let el = group.nextElementSibling;
     while (el && !(el.classList.contains('group') && !el.classList.contains('step'))) {
-      if (el.style.display !== 'none') { visible = true; break; }
+      if (el.tagName === 'A' && el.style.display !== 'none') { visible = true; break; }
       el = el.nextElementSibling;
     }
     group.style.display = visible ? '' : 'none';
