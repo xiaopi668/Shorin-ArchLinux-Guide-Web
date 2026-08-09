@@ -107,7 +107,6 @@ a:hover { text-decoration: underline; }
 
 /* ===== 移动端导航按钮 ===== */
 .menu-btn { display: none; }
-.sidebar-mask { display: none; }
 @media (max-width: 940px) {
   .menu-btn {
     display: flex; align-items: center; justify-content: center;
@@ -121,35 +120,20 @@ a:hover { text-decoration: underline; }
   }
   .menu-btn:hover { border-color: var(--accent); color: var(--hover-text); }
   .menu-btn:active { transform: scale(0.92); }
-  body.menu-open { overflow: hidden; }
-  .sidebar-mask {
-    position: fixed; inset: 0;
-    background: rgba(5, 8, 14, 0.55);
-    backdrop-filter: blur(2px);
-    opacity: 0; visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-    z-index: 98;
-  }
-  body.menu-open .sidebar-mask { opacity: 1; visibility: visible; }
-  :root[data-theme="light"] .sidebar-mask { background: rgba(20, 35, 60, 0.4); }
   .sidebar {
-    position: fixed !important; top: 0 !important; left: 0; bottom: 0;
+    position: static !important;
     max-height: none !important;
-    width: min(86vw, 340px);
-    border-radius: 0;
-    border-top: none; border-left: none; border-bottom: none;
-    transform: translateX(-105%);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 99;
+    display: none;
     animation: none;
-    padding: 60px 14px 24px;
-    display: flex; flex-direction: column;
   }
-  body.menu-open .sidebar { transform: none; box-shadow: var(--drawer-shadow); }
-  body.menu-open .menu-btn { transform: rotate(90deg); z-index: 101; }
-  .sidebar .sb-search { flex-shrink: 0; }
-  .sidebar .sb-tip { flex-shrink: 0; }
-  .sidebar .sb-list { overflow-y: auto; flex: 1; padding-bottom: 8px; }
+  body.menu-open .sidebar {
+    display: block;
+    animation: fadeIn 0.25s ease both;
+    max-height: calc(100vh - 90px);
+    overflow-y: auto;
+    margin-bottom: 16px;
+  }
+  body.menu-open .menu-btn { transform: rotate(90deg); }
   .hero.mini { padding-left: 64px; }
   .hero.mini .crumbs { display: none; }
   .github-corner { padding: 7px 12px; font-size: 0.75rem; }
@@ -761,7 +745,7 @@ main { min-width: 0; }
 
 /* ===== 打印 ===== */
 @media print {
-  .sidebar, .sidebar-mask, .top-actions, .github-corner, .menu-btn, .theme-btn, .to-top, .pn, .page-foot, .contact-card, .copy-btn, .hero { display: none !important; }
+  .sidebar, .top-actions, .github-corner, .menu-btn, .theme-btn, .to-top, .pn, .page-foot, .contact-card, .copy-btn, .hero { display: none !important; }
   body { background: #fff; color: #000; }
   .markdown-body { background: none; border: none; padding: 0; }
   .layout { padding: 0; display: block; }

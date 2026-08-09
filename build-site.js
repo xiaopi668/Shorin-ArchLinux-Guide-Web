@@ -257,7 +257,6 @@ function page(rel, title, bodyHtml, current, prev, next) {
   </a>
 </div>
 <button id="menuBtn" class="menu-btn" type="button" aria-label="打开导航">☰</button>
-<div class="sidebar-mask" id="sidebarMask" aria-hidden="true"></div>
 <button class="to-top" id="toTop" type="button" aria-label="回到顶部" title="回到顶部">
   <svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 13V3M3.5 7.5L8 3l4.5 4.5"/></svg>
 </button>
@@ -350,21 +349,17 @@ document.getElementById('sbSearch').addEventListener('input', e => {
   });
 });
 const menuBtn = document.getElementById('menuBtn');
-const mask = document.getElementById('sidebarMask');
 function closeMenu() {
   document.body.classList.remove('menu-open');
   if (menuBtn) menuBtn.textContent = '☰';
-  if (mask) mask.setAttribute('aria-hidden', 'true');
 }
 if (menuBtn) {
   menuBtn.addEventListener('click', () => {
     const open = document.body.classList.toggle('menu-open');
     menuBtn.textContent = open ? '✕' : '☰';
-    if (mask) mask.setAttribute('aria-hidden', open ? 'false' : 'true');
   });
   document.querySelectorAll('.sidebar a').forEach(a => a.addEventListener('click', closeMenu));
 }
-if (mask) mask.addEventListener('click', closeMenu);
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && document.body.classList.contains('menu-open')) closeMenu();
 });
