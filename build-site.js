@@ -127,15 +127,27 @@ function groupIcon(name) {
   return `<img class="grp-icon" src="/${LOGO_DIR}/${name}" alt="" loading="lazy">`;
 }
 
+// 流程图步骤图标（Lucide 风格线框，stroke=currentColor）
+const STEP_ICONS = {
+  download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
+  layout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>',
+  gpu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>',
+  settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+  palette: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>',
+  zap: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+  gamepad: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"/></svg>',
+  more: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>'
+};
+
 const ARCH_TREE = [
-  { label: '① 安装系统', entry: '安装ArchLinux.md', items: ['手动安装省流版.md', '安装桌面环境前的准备.md'] },
-  { label: '② 选择桌面环境', entry: '安装桌面环境或窗口管理器.md', items: ['一键配置桌面环境.md', '安装GNOME.md', '安装KDE.md', '安装Niri.md', '安装Labwc.md', '安装Wayfire.md'] },
-  { label: '③ 配置显卡', entry: '显卡驱动和硬件编解码.md', items: ['显卡切换.md', '热切换显卡直通.md'] },
-  { label: '④ 基础配置', entry: '中文输入法.md', items: ['代理.md', '软件安装相关.md', '快照和系统维护.md'] },
-  { label: '⑤ 桌面美化', entry: '我的GNOME自定义设置.md', items: ['我的KDE自定义设置.md', 'ShorinNiri功能介绍.md', '终端美化.md', 'grub美化.md'] },
-  { label: '⑥ 性能优化', entry: '性能优化.md', items: ['小技巧.md'] },
-  { label: '⑦ 虚拟化与游戏', entry: '虚拟机.md', items: ['KVM虚拟机.md', '玩游戏.md'] },
-  { label: '⑧ 其他', entry: '附录.md', items: ['常见争议澄清.md', 'issues.md', 'Arch部署Astrbot.md', '交流群.md'] }
+  { label: '① 安装系统', icon: 'download', entry: '安装ArchLinux.md', items: ['手动安装省流版.md', '安装桌面环境前的准备.md'] },
+  { label: '② 选择桌面环境', icon: 'layout', entry: '安装桌面环境或窗口管理器.md', items: ['一键配置桌面环境.md', '安装GNOME.md', '安装KDE.md', '安装Niri.md', '安装Labwc.md', '安装Wayfire.md'] },
+  { label: '③ 配置显卡', icon: 'gpu', entry: '显卡驱动和硬件编解码.md', items: ['显卡切换.md', '热切换显卡直通.md'] },
+  { label: '④ 基础配置', icon: 'settings', entry: '中文输入法.md', items: ['代理.md', '软件安装相关.md', '快照和系统维护.md'] },
+  { label: '⑤ 桌面美化', icon: 'palette', entry: '我的GNOME自定义设置.md', items: ['我的KDE自定义设置.md', 'ShorinNiri功能介绍.md', '终端美化.md', 'grub美化.md'] },
+  { label: '⑥ 性能优化', icon: 'zap', entry: '性能优化.md', items: ['小技巧.md'] },
+  { label: '⑦ 虚拟化与游戏', icon: 'gamepad', entry: '虚拟机.md', items: ['KVM虚拟机.md', '玩游戏.md'] },
+  { label: '⑧ 其他', icon: 'more', entry: '附录.md', items: ['常见争议澄清.md', 'issues.md', 'Arch部署Astrbot.md', '交流群.md'] }
 ];
 
 const orderArch = ARCH_TREE.map(n => [n.entry].concat(n.items)).flat();
@@ -474,7 +486,9 @@ function archTableToFlow() {
     const itemsHtml = items.length ? `<div class="flow-items">${items.map(it => `<a href="/${it.rel}" title="${it.title}">${it.title}</a>`).join('')}</div>` : '';
     const choice = /选择桌面环境|配置显卡|安装系统/.test(node.label) && items.length > 1
       ? `<span class="flow-choice">${items.length}选1</span>` : '';
-    return `<div class="flow-step"><div class="flow-head"><span class="flow-label">${node.label}</span>${choice}</div>${entryHtml}${itemsHtml}</div>`;
+    const icon = node.icon && STEP_ICONS[node.icon]
+      ? `<span class="flow-icon" aria-hidden="true">${STEP_ICONS[node.icon]}</span>` : '';
+    return `<div class="flow-step"><div class="flow-head">${icon}<span class="flow-label">${node.label}</span>${choice}</div>${entryHtml}${itemsHtml}</div>`;
   }).join('<div class="flow-arrow" aria-hidden="true"></div>');
   return `<div class="flow flow-arch">${steps}</div>`;
 }

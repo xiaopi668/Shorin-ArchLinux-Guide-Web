@@ -831,6 +831,24 @@ main { min-width: 0; }
   flex-wrap: wrap;
   margin-bottom: 6px;
 }
+.flow-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px; height: 26px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  color: var(--accent-2);
+  background: rgba(23,147,209,0.12);
+  border: 1px solid rgba(23,147,209,0.3);
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+.flow-icon svg { width: 15px; height: 15px; }
+.flow-step:hover .flow-icon {
+  transform: scale(1.12) rotate(-4deg);
+  color: var(--cyan);
+  background: rgba(23,147,209,0.2);
+}
 .flow-label {
   font-size: 0.78rem;
   font-weight: 700;
