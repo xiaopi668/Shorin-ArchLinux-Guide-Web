@@ -119,6 +119,14 @@ fs.writeFileSync(path.join(OUT, '_redirects'),
   '/wiki/wiki/* /wiki/:splat 301\n');
 
 // ---------- nav ----------
+// 发行版图标：Simple Icons 官方品牌 SVG，构建时随站点输出
+const LOGO_DIR = 'pictures/logos';
+function groupIcon(name) {
+  const file = path.join(SRC, LOGO_DIR, name);
+  if (!fs.existsSync(file)) return '';
+  return `<img class="grp-icon" src="/${LOGO_DIR}/${name}" alt="" loading="lazy">`;
+}
+
 const ARCH_TREE = [
   { label: '① 安装系统', entry: '安装ArchLinux.md', items: ['手动安装省流版.md', '安装桌面环境前的准备.md'] },
   { label: '② 选择桌面环境', entry: '安装桌面环境或窗口管理器.md', items: ['一键配置桌面环境.md', '安装GNOME.md', '安装KDE.md', '安装Niri.md', '安装Labwc.md', '安装Wayfire.md'] },
@@ -149,10 +157,10 @@ function buildGroup(srcDir, order, label, icon, outDir, titleFromName, exclude, 
 }
 
 const groups = [];
-groups.push(buildGroup(path.join(SRC, 'wiki'), orderRoot, '通用', '🧭', path.join(OUT, 'wiki')));
-groups.push(buildGroup(path.join(SRC, 'wiki/archlinux'), orderArch, 'Arch Linux', '🐉', path.join(OUT, 'wiki/archlinux'), true, [], ARCH_TREE));
-groups.push(buildGroup(path.join(SRC, 'wiki/linuxmint'), [], 'Linux Mint', '🌿', path.join(OUT, 'wiki/linuxmint')));
-groups.push(buildGroup(path.join(SRC, 'wiki/cachyos'), [], 'CachyOS', '🚀', path.join(OUT, 'wiki/cachyos')));
+groups.push(buildGroup(path.join(SRC, 'wiki'), orderRoot, '通用', groupIcon('generic.svg'), path.join(OUT, 'wiki')));
+groups.push(buildGroup(path.join(SRC, 'wiki/archlinux'), orderArch, 'Arch Linux', groupIcon('archlinux.svg'), path.join(OUT, 'wiki/archlinux'), true, [], ARCH_TREE));
+groups.push(buildGroup(path.join(SRC, 'wiki/linuxmint'), [], 'Linux Mint', groupIcon('linuxmint.svg'), path.join(OUT, 'wiki/linuxmint')));
+groups.push(buildGroup(path.join(SRC, 'wiki/cachyos'), [], 'CachyOS', groupIcon('cachyos.svg'), path.join(OUT, 'wiki/cachyos')));
 
 const flat = [];
 groups.forEach(g => g.items.forEach(it => flat.push(it)));
