@@ -439,9 +439,25 @@ let readmeText = fs.readFileSync(path.join(SRC, 'README.md'), 'utf8')
 const readmeBody = marked.parse(rewriteMarkdown(readmeText, SRC));
 
 // 首页目录表格 -> 流程图：识别"章节|小节"表格，转成竖向步骤流
+// Arch 表按流程分组（ARCH_TREE）渲染并在选择型步骤标注"几选一"
+function archTableToFlow() {
+  const arch = groups.find(g => g.label === 'Arch Linux');
+  const steps = ARCH_TREE.map(node => {
+    const entry = arch.items.find(x => x.name === node.entry);
+    const items = node.items.map(n => arch.items.find(x => x.name === n)).filter(Boolean);
+    const entryHtml = entry ? `<a href="/${entry.rel}" title="${entry.title}">${entry.title}</a>` : '';
+    const itemsHtml = items.length ? `<div class="flow-items">${items.map(it => `<a href="/${it.rel}" title="${it.title}">${it.title}</a>`).join('')}</div>` : '';
+    const choice = /选择桌面环境|配置显卡|安装系统/.test(node.label) && items.length > 1
+      ? `<span class="flow-choice">${items.length}选1</span>` : '';
+    return `<div class="flow-step"><div class="flow-head"><span class="flow-label">${node.label}</span>${choice}</div>${entryHtml}${itemsHtml}</div>`;
+  }).join('<div class="flow-arrow" aria-hidden="true"></div>');
+  return `<div class="flow flow-arch">${steps}</div>`;
+}
 function tableToFlow(html) {
   return html.replace(/<table>([\s\S]*?)<\/table>/g, (whole, inner) => {
     if (!/章节/.test(inner)) return whole;
+    const rowCount = (inner.match(/<tr>/g) || []).length;
+    if (inner.includes('wiki/archlinux') && rowCount >= 5) return archTableToFlow();
     const rows = [...inner.matchAll(/<tr>([\s\S]*?)<\/tr>/g)].map(m => m[1]);
     if (rows.length < 2) return whole;
     const steps = rows.slice(1).map(r => {

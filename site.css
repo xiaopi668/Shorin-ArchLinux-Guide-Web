@@ -810,6 +810,32 @@ main { min-width: 0; }
   transform: translateX(4px);
   box-shadow: 0 4px 20px rgba(23, 147, 209, 0.12);
 }
+.flow-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.flow-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+  background: rgba(23,147,209,0.1);
+  border: 1px solid rgba(23,147,209,0.3);
+  padding: 1px 10px;
+  border-radius: 999px;
+}
+.flow-choice {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--orange);
+  background: rgba(233, 162, 59, 0.12);
+  border: 1px solid rgba(233, 162, 59, 0.4);
+  padding: 1px 10px;
+  border-radius: 999px;
+}
 .flow-step > a {
   font-size: 1.05rem;
   font-weight: 700;
