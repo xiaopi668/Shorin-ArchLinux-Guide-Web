@@ -437,13 +437,36 @@ let readmeText = fs.readFileSync(path.join(SRC, 'README.md'), 'utf8')
   .replace(/<p[^>]*>\s*<\/p>/gi, '')
   .replace(/\[!\[SHORiNのARCH Logo\]\([^)]*\)\]\([^)]*\)\n?/, '');
 const readmeBody = marked.parse(rewriteMarkdown(readmeText, SRC));
+
+// 首页目录表格 -> 流程图：识别"章节|小节"表格，转成竖向步骤流
+function tableToFlow(html) {
+  return html.replace(/<table>([\s\S]*?)<\/table>/g, (whole, inner) => {
+    if (!/章节/.test(inner)) return whole;
+    const rows = [...inner.matchAll(/<tr>([\s\S]*?)<\/tr>/g)].map(m => m[1]);
+    if (rows.length < 2) return whole;
+    const steps = rows.slice(1).map(r => {
+      const tds = [...r.matchAll(/<td>([\s\S]*?)<\/td>/g)].map(m => m[1]);
+      if (tds.length < 2) return null;
+      const title = tds[0].replace(/^\s+|\s+$/g, '');
+      const items = tds[1].split(/<br\s*\/?>/)
+        .map(s => s.replace(/^\s*[-*\s]+\s*/, '').trim())
+        .filter(Boolean);
+      if (!title || title === '—') return null;
+      const itemHtml = items.length ? `<div class="flow-items">${items.join('')}</div>` : '';
+      return `<div class="flow-step">${title}${itemHtml}</div>`;
+    }).filter(Boolean);
+    if (!steps.length) return whole;
+    return `<div class="flow">${steps.join('<div class="flow-arrow" aria-hidden="true"></div>')}</div>`;
+  });
+}
+let readmeBodyHtml = tableToFlow(readmeBody);
 const contactCard = `<div class="contact-card">
   <h2>💬 交流群</h2>
   <p>遇到问题需要帮助？欢迎加入作者的 Arch QQ 交流群：</p>
   <div class="qq-group">QQ 群号：<b id="qqNum">130515298</b><button class="copy-btn" id="qqCopy" type="button" title="复制"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M3 9.5V3.5a.5.5 0 0 1 .5-.5h6"/></svg></button></div>
   <p>提问前建议先阅读 <a href="https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way" target="_blank">提问的智慧</a>，学会清晰描述问题。</p>
 </div>`;
-pages.push({ rel: 'index.html', title: 'SHORiNのARCH · Arch Linux Guide', body: readmeBody + contactCard });
+pages.push({ rel: 'index.html', title: 'SHORiNのARCH · Arch Linux Guide', body: readmeBodyHtml + contactCard });
 slugCounts = {};
 // 更新日志：上游已删除 更新日志.md，用本地 CHANGELOG.md 兜底（每日 sync 不会被上游删掉）
 const clSrc = fs.existsSync(path.join(SRC, '更新日志.md'))
