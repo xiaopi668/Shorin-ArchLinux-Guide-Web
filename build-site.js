@@ -194,7 +194,7 @@ function page(rel, title, bodyHtml, current, prev, next) {
   const isHome = rel === 'index.html';
   const depth = rel.split('/').length - 1;
   const prefix = depth ? '../'.repeat(depth) : '';
-  // 面包屑：首页 › 分组 > 子组（如 首页 › Arch Linux > 选择桌面环境）
+  // 面包屑：站点名 > 分组 > 子组 > 当前页（如 Arch Linux Guide > Arch Linux > 安装系统 > 安装桌面环境前的准备）
   let groupLabel = '';
   let stepLabel = '';
   for (const g of groups) {
@@ -211,7 +211,7 @@ function page(rel, title, bodyHtml, current, prev, next) {
     }
     break;
   }
-  const crumbs = `首页 › ${groupLabel}${stepLabel ? ` > ${stepLabel}` : ''}`;
+  const crumbs = `Arch Linux Guide${groupLabel ? ` > ${groupLabel}` : ''}${stepLabel ? ` > ${stepLabel}` : ''} > ${title}`;
   const hero = isHome ? `
   <header class="hero">
     <img class="logo" src="${LOGO_DATA}" alt="SHORiNのARCH Logo">
