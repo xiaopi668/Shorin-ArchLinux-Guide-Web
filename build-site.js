@@ -5,7 +5,8 @@ const { marked } = require('marked');
 const SRC = process.env.SITE_SRC || __dirname;
 const OUT = process.env.SITE_OUT || path.join(__dirname, 'dist');
 const REPO = 'SHORiN-KiWATA/Shorin-ArchLinux-Guide';
-const BLOB_RE = new RegExp(`https://github\\.com/${REPO}/blob/main/`, 'g');
+const BLOB_STR = `https://github.com/${REPO}/blob/main/`;
+const BLOB_RE = new RegExp(BLOB_STR.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
 
 marked.setOptions({ gfm: true, breaks: false });
 
