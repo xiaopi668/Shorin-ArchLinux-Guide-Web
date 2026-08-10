@@ -134,11 +134,14 @@ a:hover { text-decoration: underline; }
     margin-bottom: 16px;
   }
   body.menu-open .menu-btn { transform: rotate(90deg); }
-  .hero.mini { padding-left: 64px; }
+  .hero.mini { padding-left: 64px; padding-right: 150px; }
   .hero.mini .crumbs { display: none; }
+  .hero.mini .brand { max-width: calc(100vw - 214px); overflow: hidden; }
+  .hero.mini .brand {
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
   .github-corner { padding: 7px 12px; font-size: 0.75rem; }
   .github-corner svg { width: 15px; height: 15px; }
-  .hero.mini .brand { padding-right: 150px; }
   .top-actions { top: 12px; right: 12px; }
 }
 
@@ -296,7 +299,9 @@ a:hover { text-decoration: underline; }
   text-align: left;
   display: flex; align-items: center; justify-content: space-between;
   gap: 16px; flex-wrap: wrap;
+  padding-right: 180px;
 }
+@media (min-width: 1200px) { .hero.mini { padding-right: 200px; } }
 .hero.mini .brand {
   display: inline-flex; align-items: center; gap: 10px;
   color: var(--text); font-weight: 700; font-size: 1.05rem;
