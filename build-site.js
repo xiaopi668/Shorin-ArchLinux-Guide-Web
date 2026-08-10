@@ -194,7 +194,24 @@ function page(rel, title, bodyHtml, current, prev, next) {
   const isHome = rel === 'index.html';
   const depth = rel.split('/').length - 1;
   const prefix = depth ? '../'.repeat(depth) : '';
-  const groupLabel = groups.find(g => g.items.some(it => it.rel === current))?.label || '';
+  // 面包屑：首页 › 分组 > 子组（如 首页 › Arch Linux > 选择桌面环境）
+  let groupLabel = '';
+  let stepLabel = '';
+  for (const g of groups) {
+    if (!g.items.some(it => it.rel === current)) continue;
+    groupLabel = g.label || '';
+    if (g.tree) {
+      for (const node of g.tree) {
+        const names = [node.entry].concat(node.items);
+        if (names.some(n => g.items.find(x => x.name === n)?.rel === current)) {
+          stepLabel = node.label.replace(/^[①②③④⑤⑥⑦⑧⑨⑩]\s*/, '');
+          break;
+        }
+      }
+    }
+    break;
+  }
+  const crumbs = `首页 › ${groupLabel}${stepLabel ? ` > ${stepLabel}` : ''}`;
   const hero = isHome ? `
   <header class="hero">
     <img class="logo" src="${LOGO_DATA}" alt="SHORiNのARCH Logo">
@@ -211,7 +228,7 @@ function page(rel, title, bodyHtml, current, prev, next) {
   </header>` : `
   <header class="hero mini">
     <a class="brand" href="/index.html"><img src="${LOGO_DATA}" alt="logo"> SHORiNのARCH</a>
-    <div class="crumbs">首页 › ${groupLabel}</div>
+    <div class="crumbs">${crumbs}</div>
   </header>`;
   const pn = (prev || next) ? `<nav class="pn">
     ${prev ? `<a class="prev" href="/${prev.rel}">← ${prev.title}</a>` : '<span></span>'}
