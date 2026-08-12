@@ -856,7 +856,7 @@ sudo systemctl enable --now bluetooth
     至此，一个简易的剪贴板 TUI 就做好了，我觉得这很有趣，分享给你。这个小游戏里我们使用 `fzf` 处理数据，还可以使用别的东西，比如类似 `fuzzel` 的菜单程序，万变不离其宗，原理都是一样的。
 
     ```text
-    cliphist | fuzzel -d | cliphist decode | wl-copy
+    cliphist list | fuzzel -d | cliphist decode | wl-copy
     ```
 
 4. 安装 TUI

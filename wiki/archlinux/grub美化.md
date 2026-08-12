@@ -19,7 +19,7 @@
 3. 生成 GRUB 的配置文件
 
     ```bash
-    grub-mkconfig -o /efi/grub/grub.cfg
+    grub-mkconfig -o /boot/grub/grub.cfg
     ```
 
 我喜欢的主题：

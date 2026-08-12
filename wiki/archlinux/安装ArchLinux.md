@@ -14,7 +14,7 @@
 
 - [手动安装省流版](手动安装省流版.md)
 
->视频教程：[【从「Linux Mint 入门」到「Arch Linux 安装详解」桌面端 Linux 入门的最佳路径】](https://www.bilibili.com/video/BV19DBqB4EY4/?share_source=copy_web&vd_source=1c6a132d86487c8c4a29c7ff5cd8ac50)
+>视频教程（如果内容和文档不同请以文档为准）：[【从「Linux Mint 入门」到「Arch Linux 安装详解」桌面端 Linux 入门的最佳路径】](https://www.bilibili.com/video/BV19DBqB4EY4/?share_source=copy_web&vd_source=1c6a132d86487c8c4a29c7ff5cd8ac50)
 
 新手建议先手动安装，把其他安装方式当作重装系统的便利手段，否则日后出现问题自己不会解决。如果手动安装太难，就先使用开箱即用的 Arch，比如 CachyOS。
 
@@ -73,7 +73,7 @@
 
 >不同的人安装 Arch 时的分区、Bootloader、文件系统等内容都会略有不同。这部分简单总结我的方案，对安装有一个大概的画面，看不懂也没关系。
 
-Win 加 Linux 双系统；分区时创建独立于 Windows 的启动分区（ESP）并挂载到 `/efi`，剩下的所有空间创建为一个大分区；文件系统使用 Btrfs，创建 `@` 和 `@home` 子卷；Bootloader 使用最常用的 GRUB，并且装进 ESP 以兼容 Btrfs；Swap（交换空间）使用 ZRAM（内存压缩）配合硬盘 Swap；联网工具使用最常用的 NetworkManager。
+Win 加 Linux 双系统；分区时创建独立于 Windows 的启动分区（ESP）并挂载到 `/efi`，剩下的所有空间创建为一个大分区；文件系统使用 Btrfs，创建 `@` 和 `@home` 子卷；Bootloader 使用最常用的 GRUB；Swap（交换空间）使用 ZRAM（内存压缩）配合硬盘 Swap；联网工具使用最常用的 NetworkManager。
 
 ## 手动安装
 
@@ -120,7 +120,7 @@ ping bilibili.com #确认网络正常
 
 Ctrl+C 可以中止正在运行的命令。
 
-- 使用` iwctl` 命令行工具连接 wifi（此工具由 `iwd` 提供）
+- 使用`iwctl` 命令行工具连接 wifi（此工具由 `iwd` 提供）
 
   1. 启动
 
@@ -564,7 +564,7 @@ passwd
 2. 安装引导
 
    ```bash
-   grub-install --target=x86_64-efi --efi-directory=/efi --boot-directory=/efi --bootloader-id=ARCH
+   grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=ARCH
    ```
 
    >`grub-install` 安装 GRUB；
@@ -573,7 +573,7 @@ passwd
 
    >`--efi-directory` 指定 ESP 位置；
 
-   >`--boot-directory` 指定 GRUB 的安装目录；
+   >`--boot-directory` 可以指定 GRUB 的安装目录，如果不写的话就是 /boot/grub
 
    >`--bootloader-id` 取一个启动项名字；
 
@@ -604,7 +604,7 @@ passwd
    具体安装命令：
 
    ```
-   grub-install --target=x86_64-efi --efi-directory=/efi --boot-directory=/efi --removable --no-nvram
+   grub-install --target=x86_64-efi --efi-directory=/efi --removable --no-nvram
    ```
 
    >`--removable` 将引导安装至回退路径
@@ -627,7 +627,7 @@ passwd
 
    - 显示开机日志
 
-     `GRUB_CMDLINE_LINUX_DEFAULT` 里面去掉 `quiet` 以显示开机日志。再把 `loglevel` 日志等级设置为 5。`loglevel` 共 7 级，5 级是一个信息量的平衡点。
+     `GRUB_CMDLINE_LINUX_DEFAULT` 里面去掉 `quiet` 以显示开机日志。再把 `loglevel` 日志等级设置为 5。`loglevel` 共 8 级，5 级是一个信息量的平衡点。
 
    - 禁用 watchdog
 
@@ -639,15 +639,7 @@ passwd
 
       取消最后一行 `GRUB_DISABLE_OS_PROBER=false` 的注释。
 
-5. 在 GRUB 的默认安装位置创建链接
-
-   ```bash
-   ln -sf /efi/grub /boot/grub
-   ```
-
-   大多数程序会默认检测 `/boot/grub` 作为 GRUB 的安装位置，但是我们的 GRUB 在 `/efi/grub`，所以创建一个链接方便使用。
-
-6. 生成 GRUB 的配置文件
+5. 生成 GRUB 的配置文件
 
 
    ```bash
@@ -656,7 +648,28 @@ passwd
 
    `grub-mkconfig`命令会生成启动流程，加上 `-o` 选项将输出保存到文件，文件路径是`/boot/grub/grub.cfg`
 
->以上的 GRUB 配置方法已经足够使用，但存储在 FAT 文件系统上的 `grub.cfg` 无法被 Btrfs 快照回档，极端情况下仍会出现问题，例如在快照启动项里生成了 `grub.cfg` 导致永远启动进快照启动项。如果你想要绝对稳定的回档，看进阶内容：[可选：GRUB 在 Btrfs 文件系统下的最佳配置方法](附录.md#grub-在-btrfs-文件系统的最佳配置方法)
+6. 初始化 Btrfs 环境块
+   
+   ```
+   grub-editenv - set ok=1
+   
+   # grub-editenv 编辑 grubenv
+   # 短横杠代表 /boot/grub/grubenv 
+   # set ok=1 这里随意写了点东西让 grubenv 初始化
+   ```
+
+   可以使用如下命令验证
+
+   ```
+   grub-editenv - list
+   ```
+   应该会看到类似下面这样的输出
+   ```
+   env_block=512+1
+   ok=1
+   ```
+
+   > 注意，如果你使用 LVM、RAID 或 encryption 则不适用这个方法
 
 ### ZRAM
 
@@ -697,7 +710,7 @@ ZRAM 将内存的部分空间用作交换空间，如果你没有配置 Swap，�
    在 `GRUB_CMDLINE_LINUX_DEFAULT=""` 里写入 `zswap.enabled=0`。
 
    ```ini
-   GRUB_CMDLINE_LINUX_DEFAULT="... zswap.enabled=0 ... "
+   GRUB_CMDLINE_LINUX_DEFAULT="... zswap.enabled=0 ..."
    ```
 
 4. 重新生成 GRUB 的配置文件

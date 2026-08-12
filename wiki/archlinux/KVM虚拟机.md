@@ -261,8 +261,9 @@ sudo dmesg | grep -e DMAR -e IOMMU
    写入
 
    ```bash
-   options vfio-pci ids=10de:28e0,10de:22be （硬件ID与硬件ID之间用英文逗号隔开）
+   options vfio-pci ids=10de:28e0,10de:22be 
    ```
+   硬件ID与硬件ID之间用英文逗号隔开
 
 3. 编辑内核参数让 VFIO-PCI 抢先加载
 
