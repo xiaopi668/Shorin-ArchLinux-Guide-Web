@@ -18,13 +18,14 @@ Linux `/lɪnəks/` 只是一个内核，我们说 Linux 发行版的时候指的
   ![](pictures/home/steamrank.png)
 
   除去[基于 Arch 开发的 SteamOS](https://lists.archlinux.org/archives/list/arch-dev-public@lists.archlinux.org/thread/RIZSKIBDSLY4S5J2E2STNP5DH4XZGJMR/)，Arch Linux、Linux Mint 和 CachyOS 常居排行榜前三。
+
   >SteamOS 是专为游戏掌机和主机开发的系统，所以排除。
 
-  如果你是第一次接触 Linux，[Linux Mint](https://linuxmint.com/) 就是最佳的入门之选，它是以新手友好为最大卖点的 Debian 系发行版，你将拥有最无痛的新手体验。
+  如果你是第一次接触 Linux，[Linux Mint](https://linuxmint.com/) 就是最佳的入门之选，它是以新手友好为最大卖点的 Debian 系发行版，基于 Ubuntu 制作，你将拥有最无痛的新手体验。Linux Mint 不是游戏发行版，也不是大公司开发，却长期在 Steam 调查中保持领先地位，普通用户对其的认可程度可见一斑。
   
   >这还涉及到 Linux 显示协议的变迁。现在大部分桌面和发行版都已经转向新的 Wayland 协议，但是 Wayland 严格的权限管理加上软件厂商消极的适配开发，~~点名批评国产厂商~~，常常导致软件在 Wayland 上有各种问题，而 Linux Mint 仍将 X11 作为可选项，可以获得更稳定更完整的使用体验。
 
-  如果想更进一步，获得最佳的桌面端 Linux 体验，处在精简、易用、自由和好玩的平衡点的 [Arch Linux](https://archlinux.org/) 是最佳选择。
+  Arch 系发行版长期在 Steam 调查中占据领先位置，如果想更进一步，获得最佳的桌面端 Linux 体验，处在精简、易用、自由和好玩的平衡点的 [Arch Linux](https://archlinux.org/) 是最佳选择。
 
   >Arch 拥有最新的软件、最详尽的文档、最偏向桌面端日用的社区氛围，甚至还有 Steam 的背书。软件生态由用户上传到 AUR 的各种一键安装脚本扩充，虽然存在安全隐患，但是非常丰富，非常方便。就像在 Windows 上不要随意安装软件那样，在 Arch 也不要随意安装 AUR 上的包。
 
@@ -56,13 +57,25 @@ Linux `/lɪnəks/` 只是一个内核，我们说 Linux 发行版的时候指的
 
 ## 其他推荐
 
-以下是值得尝试的发行版
+上面提到的 Linux Mint 和 Arch Linux 是我认为绝对不会错的选择，而这部分则会列举一些其他值得使用的发行版，如果符合需求的话推荐尝试。还会额外提及一些 Linux 发行版的历史，如果不感兴趣可以跳过。
 
 - [Fedora](https://fedoraproject.org/)
 
   >你一定听说过 CentOS 吧
 
-  永远处在 Linux 技术的最前沿，~~有人说这是当小白鼠~~。红帽是现代 Linux 技术生态的奠基者，Fedora 作为红帽系发行版的上游，如果以后想往这个方向发展职业的话推荐尝试。
+  过去几十年，如果你翻开一本《Linux从入门到精通》之类的教程类书籍，那么它用于演示的发行版大概率是 CentOS，因为 CentOS 曾经是 RHEL 的社区克隆版（现在已经不是了）。RHEL 是企业级服务器中占比最高的系统，它的开发商是红帽，1999 年就在纳斯达克上市，2019 年被 IBM 收购，成为 IBM 的全资子公司。红帽是现代 Linux 底层技术的奠基者，systemd、Wayland、PipeWire、Flatpak 这些当前桌面 Linux 赖以运行的组件大多由红帽主导或深度参与开发。红帽系发行版是 Debian 系之外的第二大分支，软件包后缀为 `.rpm`，如果有软件要适配 Linux，`.rpm` 的优先级仅次于 `.deb`。
+  
+  Fedora 是红帽系发行版的最上游，永远处在 Linux 技术的最前沿，~~有人说这是当小白鼠~~。如果你以后想做企业级服务器相关的工作，或者进行 Linux 相关的开发工作，可以尝试 Fedora 作为桌面操作系统。
+
+- [Ubuntu 桌面版](https://ubuntu.com/download/desktop)
+  
+  >oh！是他！
+
+  Ubuntu 基于 Debian 制作，是现今用户数最多的 Linux 发行版，没有之一。它的开发商是 Canonical，他们将 Linux 桌面易用化并成功推向大众，甚至成为了部分笔记本电脑的预装操作系统。Ubuntu 服务器版在 AWS、阿里云、腾讯云之类的云平台上占比第一，在企业级服务器市场的占比也仅次于红帽，WSL （Windows 上的 Linux 子系统）默认安装 Ubuntu 的设计更进一步增加了 Ubuntu 的用户数量。
+  
+  用户数量上的绝对优势理应让 Ubuntu 在 Steam 的系统排名中拥有压倒性的领先，可事实并非如此。这表明 Ubuntu 的用户大多是“用 Linux 干活”的人，不那么日常，Ubuntu 的教程也总有种课程学习的既视感。
+  
+  如果你想学习 Linux 相关知识，或者想租一台云服务器，或者你想自己部署 AI 项目，可以尝试 Ubuntu。
 
 - [PikaOS Linux](https://wiki.pika-os.com/en/home)
 
@@ -94,9 +107,9 @@ Linux `/lɪnəks/` 只是一个内核，我们说 Linux 发行版的时候指的
 
 - [Debian](https://www.debian.org/)
 
-  > 适合养老
+  > OG Respect
 
-  服务端的霸主，但是对于桌面端来说，它的软件包实在老旧。除非你要绝对的稳定性，否则不推荐使用。
+  对于桌面端来说，它的软件包实在老旧。除非你要绝对的稳定性，否则不推荐使用。
 
 - [Debian Sid](https://wiki.debian.org/DebianUnstable)
 

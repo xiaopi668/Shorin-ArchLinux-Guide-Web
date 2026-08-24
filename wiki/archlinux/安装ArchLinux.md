@@ -554,12 +554,12 @@ passwd
 1. 安装必要的软件包
 
    ```shell
-   pacman -S grub efibootmgr os-prober exfat-utils
+   pacman -S grub efibootmgr os-prober fuse3
    ```
 
    `efibootmgr` 管理 UEFI 启动项；
 
-   `os-prober` 和 `exfat-utils` 用来搜索 Win11（不配置双系统的话可以不装）。
+   `os-prober` 和 `fuse3` 用于双系统配置。
 
 2. 安装引导
 
@@ -639,7 +639,7 @@ passwd
 
       取消最后一行 `GRUB_DISABLE_OS_PROBER=false` 的注释。
 
-5. 生成 GRUB 的配置文件
+5. 生成启动流程 grub.cfg
 
 
    ```bash
@@ -649,13 +649,15 @@ passwd
    `grub-mkconfig`命令会生成启动流程，加上 `-o` 选项将输出保存到文件，文件路径是`/boot/grub/grub.cfg`
 
 6. 初始化 Btrfs 环境块
+
+   通常环境变量会存储在 `/boot/grub/grubenv` 中，这与`启动项记忆`等实用功能相关，但 Btrfs 文件系统的特殊性导致了写入异常。从 GRUB 2.14 版本开始，可以初始化 Btrfs Header 中的部分区域用于 `grubenv` 相关功能。
    
    ```
    grub-editenv - set ok=1
    
    # grub-editenv 编辑 grubenv
    # 短横杠代表 /boot/grub/grubenv 
-   # set ok=1 这里随意写了点东西让 grubenv 初始化
+   # set ok=1 这里随意写了点东西初始化环境快
    ```
 
    可以使用如下命令验证

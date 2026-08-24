@@ -2,6 +2,10 @@
 
 - [efibootmgr里面有超级多启动项](#efibootmgr里面有超级多启动项)
 - [主板能识别系统盘但无法进入 GRUB](#主板能识别系统盘但无法进入-grub)
+  - [问题现象](#问题现象)
+  - [排查方法](#排查方法)
+  - [EFI 文件仍然存在](#efi-文件仍然存在)
+  - [EFI 文件丢失或无法正常加载](#efi-文件丢失或无法正常加载)
 - [KDE开机会卡住，必须重启sddm才好](#kde开机会卡住必须重启sddm才好)
 - [磁盘占用异常](#磁盘占用异常)
 - [提示没有编解码器](#提示没有编解码器)
@@ -147,11 +151,11 @@ EFI 文件存储在硬盘中，而 NVRAM 启动项存储在主板固件中。即
 
 重新执行常规安装：
 
-    grub-install --target=x86_64-efi --efi-directory=/efi --boot-directory=/efi --bootloader-id=ARCH
+    grub-install --target=x86_64-efi --efi-directory=/efi  --bootloader-id=ARCH
 
 同时安装 UEFI 默认后备启动入口：
 
-    grub-install --target=x86_64-efi --efi-directory=/efi --boot-directory=/efi --removable --no-nvram
+    grub-install --target=x86_64-efi --efi-directory=/efi  --removable --no-nvram
 
 重新生成 GRUB 配置：
 

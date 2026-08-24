@@ -206,7 +206,7 @@ yay -S chrome-gnome-shell
 
 - custom reboot
 
-  可以快捷重启到别的系统。设置里选择使用 GRUB，然后在快捷设置菜单里 reload 和 enable。（GRUB 放在 btrfs 的话没法使用这个）
+  可以快捷重启到别的系统。设置里选择使用 GRUB，然后在快捷设置菜单里 reload 和 enable。
 
 - search light
 
