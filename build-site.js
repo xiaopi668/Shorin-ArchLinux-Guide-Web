@@ -114,7 +114,22 @@ for (const dir of ['pictures', 'wallpapers', 'wiki']) {
   fs.cpSync(path.join(SRC, dir), path.join(OUT, dir), { recursive: true });
 }
 fs.copyFileSync(path.join(SRC, 'pictures/shorinarch.png'), path.join(OUT, 'shorinarch.png'));
+fs.copyFileSync(path.join(SRC, 'pictures/favicon.png'), path.join(OUT, 'favicon.png'));
 fs.copyFileSync(path.join(SRC, 'LICENSE'), path.join(OUT, 'LICENSE'));
+// 共享静态资源 → 浏览器跨页面缓存
+fs.copyFileSync(path.join(__dirname, 'site.css'), path.join(OUT, 'site.css'));
+fs.writeFileSync(path.join(OUT, '_headers'), [
+  '/*',
+  '  X-Content-Type-Options: nosniff',
+  '/pictures/*',
+  '  Cache-Control: public, max-age=86400, must-revalidate',
+  '/wallpapers/*',
+  '  Cache-Control: public, max-age=604800',
+  '/favicon.png',
+  '  Cache-Control: public, max-age=2592000',
+  '/site.css',
+  '  Cache-Control: public, max-age=86400, must-revalidate',
+].join('\n') + '\n');
 fs.writeFileSync(path.join(OUT, '_redirects'),
   '/wiki/wiki/wiki/* /wiki/:splat 301\n' +
   '/wiki/wiki/* /wiki/:splat 301\n');
@@ -147,7 +162,7 @@ const ARCH_TREE = [
   { label: '④ 基础配置', icon: 'settings', entry: '中文输入法.md', items: ['代理.md', '软件安装相关.md', '快照和系统维护.md'] },
   { label: '⑤ 桌面美化', icon: 'palette', entry: '我的GNOME自定义设置.md', items: ['我的KDE自定义设置.md', 'ShorinNiri功能介绍.md', '终端美化.md', 'grub美化.md'] },
   { label: '⑥ 性能优化', icon: 'zap', entry: '性能优化.md', items: ['小技巧.md'] },
-  { label: '⑦ 虚拟化与游戏', icon: 'gamepad', entry: '虚拟机.md', items: ['KVM虚拟机.md', '玩游戏.md'] },
+  { label: '⑦ 虚拟化与游戏', icon: 'gamepad', entry: '虚拟机.md', items: ['KVM虚拟机.md', '玩游戏.md', '虚拟局域网.md'] },
   { label: '⑧ 其他', icon: 'more', entry: '附录.md', items: ['常见争议澄清.md', 'issues.md', 'Arch部署Astrbot.md', '交流群.md'] }
 ];
 
@@ -174,6 +189,9 @@ groups.push(buildGroup(path.join(SRC, 'wiki'), orderRoot, '通用', groupIcon('g
 groups.push(buildGroup(path.join(SRC, 'wiki/archlinux'), orderArch, 'Arch Linux', groupIcon('archlinux.svg'), path.join(OUT, 'wiki/archlinux'), true, [], ARCH_TREE));
 groups.push(buildGroup(path.join(SRC, 'wiki/linuxmint'), [], 'Linux Mint', groupIcon('linuxmint.svg'), path.join(OUT, 'wiki/linuxmint')));
 groups.push(buildGroup(path.join(SRC, 'wiki/cachyos'), [], 'CachyOS', groupIcon('cachyos.svg'), path.join(OUT, 'wiki/cachyos')));
+// 上游仓库存在但此前构建未覆盖的子目录
+groups.push(buildGroup(path.join(SRC, 'wiki/others'), [], 'ShoriNOS 仓库', groupIcon('generic.svg'), path.join(OUT, 'wiki/others')));
+groups.push(buildGroup(path.join(SRC, 'wiki/legacy'), [], '旧版教程', groupIcon('generic.svg'), path.join(OUT, 'wiki/legacy')));
 
 const flat = [];
 groups.forEach(g => g.items.forEach(it => flat.push(it)));
@@ -181,9 +199,11 @@ const updateLogRel = '更新日志.html';
 flat.push({ title: '更新日志', rel: updateLogRel });
 
 // ---------- template ----------
-const css = fs.readFileSync(path.join(__dirname, 'site.css'), 'utf8');
-const LOGO_B64 = fs.readFileSync(path.join(SRC, 'pictures/shorinarch.png')).toString('base64');
-const LOGO_DATA = `data:image/png;base64,${LOGO_B64}`;
+// 共享资源全部走真实文件（浏览器跨页面缓存）：
+//   /pictures/shorinarch.png  logo（此前以 base64 内联 3 次/页，约 130KB）
+//   /favicon.png              64x64 小图标（1.2KB，构建前预生成好）
+//   /site.css                 样式表（此前内联 30KB/页）
+const LOGO_URL = '/pictures/shorinarch.png';
 
 function sidebar(current) {
   let h = '<div class="sb-search"><input id="sbSearch" type="text" placeholder="🔍 搜索章节..."></div>';
@@ -197,6 +217,15 @@ function sidebar(current) {
         for (const name of [node.entry].concat(node.items)) {
           const it = g.items.find(x => x.name === name);
           if (it) h += `<a class="sb-child${current === it.rel ? ' cur' : ''}" href="/${it.rel}" title="${it.title}">${it.title}</a>`;
+        }
+      }
+      // 不在导航树内的文章（同步进来的新文章、本地增补）也展示出来，避免内容漏出侧边栏
+      const inTree = new Set(g.tree.flatMap(n => [n.entry].concat(n.items)));
+      const extras = g.items.filter(x => !inTree.has(x.name));
+      if (extras.length) {
+        h += `<div class="group step">其他文章</div>`;
+        for (const it of extras) {
+          h += `<a class="sb-child${current === it.rel ? ' cur' : ''}" href="/${it.rel}" title="${it.title}">${it.title}</a>`;
         }
       }
     } else {
@@ -235,7 +264,7 @@ function page(rel, title, bodyHtml, current, prev, next) {
   const crumbs = `Arch Linux Guide${groupLabel ? ` > ${groupLabel}` : ''}${stepLabel ? ` > ${stepLabel}` : ''} > ${title}`;
   const hero = isHome ? `
   <header class="hero">
-    <img class="logo" src="${LOGO_DATA}" alt="SHORiNのARCH Logo">
+    <img class="logo" src="${LOGO_URL}" alt="SHORiNのARCH Logo" width="500" height="200">
     <h1>SHORiNのARCH · Arch Linux Guide</h1>
     <div class="subtitle">【2026 最适合新手的 Arch Linux 教程】系统安装 · 双系统 · N卡驱动 · 桌面环境 · 中文输入法 · 玩游戏 · 虚拟机 · 显卡直通</div>
     <div class="badges">
@@ -248,7 +277,7 @@ function page(rel, title, bodyHtml, current, prev, next) {
     <div class="scroll-hint">向下滚动探索<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6l6 6 6-6"/></svg></div>
   </header>` : `
   <header class="hero mini">
-    <a class="brand" href="/index.html"><img src="${LOGO_DATA}" alt="logo"> SHORiNのARCH</a>
+    <a class="brand" href="/index.html"><img src="${LOGO_URL}" alt="logo" width="500" height="200"> SHORiNのARCH</a>
     <div class="crumbs">${crumbs}</div>
   </header>`;
   const pn = (prev || next) ? `<nav class="pn">
@@ -269,8 +298,9 @@ function page(rel, title, bodyHtml, current, prev, next) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="${isHome ? '【2026 最适合新手的 Arch Linux 教程】系统安装 · 双系统 · N卡驱动 · 桌面环境 · 中文输入法 · 玩游戏 · 虚拟机 · 显卡直通' : title + ' - SHORiNのARCH'}">
 <title>${title} - SHORiNのARCH</title>
-<link rel="icon" href="${LOGO_DATA}">
-<script>
+<link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
+<link rel="apple-touch-icon" href="/pictures/shorinarch.png">
+<link rel="stylesheet" href="/site.css"><script>
 (function () {
   var t = null;
   try { t = localStorage.getItem('theme'); } catch (e) {}
@@ -279,7 +309,6 @@ function page(rel, title, bodyHtml, current, prev, next) {
   document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
 })();
 </script>
-<style>${css}</style>
 </head>
 <body>
 <div class="read-progress" aria-hidden="true"><i></i></div>
@@ -527,7 +556,9 @@ slugCounts = {};
 // 更新日志：上游已删除 更新日志.md，用本地 CHANGELOG.md 兜底（每日 sync 不会被上游删掉）
 const clSrc = fs.existsSync(path.join(SRC, '更新日志.md'))
   ? path.join(SRC, '更新日志.md')
-  : path.join(SRC, 'CHANGELOG.md');
+  : fs.existsSync(path.join(SRC, 'CHANGELOG.md'))
+    ? path.join(SRC, 'CHANGELOG.md')
+    : path.join(__dirname, 'CHANGELOG.md');
 const clBody = marked.parse(rewriteMarkdown(beautifyChangelog(fs.readFileSync(clSrc, 'utf8')), SRC));
 pages.push({ rel: updateLogRel, title: '更新日志', body: clBody });
 
