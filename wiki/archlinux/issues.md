@@ -292,7 +292,7 @@ terminal=kitty -e
 
 ## Nautilus等GTK4应用启动慢
 
-因为 GTK4 使用了新的渲染器，而新的渲染器和 N 卡的 'nvidia-utils' 产生了兼容性问题，设置环境变量使用旧的 GL 渲染器可以解决。
+因为 GTK4 使用了新的渲染器，和 N 卡驱动之间存在一些问题，设置环境变量使用旧的 GL 渲染器可以解决。详情看：https://gitlab.gnome.org/GNOME/gtk/-/work_items/6689
 
 ```bash
 env GSK_RENDERER=gl nautilus
@@ -424,6 +424,14 @@ gsettings set org.gnome.desktop.interface color-scheme "prefer-light" && gsettin
    此时你会发现 QQ 复制的内容出现在了 Wayland 的剪贴板里。
 
 以上就是原理。只要在检测到 X11 剪贴板发生变化的时候自动完成以上操作就解决了 QQ 的剪贴板问题。
+
+我做的 [linuxqq-wayland-fix](https://github.com/SHORiN-KiWATA/linuxqq-wayland-fix) 在 QQ 内部双向同步 X11 和 Wayland 剪贴板（同时修复了屏幕共享）：
+
+```bash
+yay -S linuxqq-wayland-fix-git
+```
+
+装好后从应用菜单的「QQ（Wayland修复版）」打开 QQ 即可。
 
 ## quickshell图标缺失
 
