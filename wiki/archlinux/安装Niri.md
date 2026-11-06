@@ -1138,14 +1138,12 @@ sudo pacman -S brightnessctl
 1. 安装依赖
 
     ```bash
-    yay -S --needed cava grim slurp hyprpicker ddcutil-service wl-longshot-git shorin-contrib-git shorin-screenrec-menu-git wf-recorder wl-screenrec
+    yay -S --needed cava grim slurp ddcutil-service wl-longshot-git shorin-contrib-git shorin-screenrec-menu-git wf-recorder wl-screenrec
     ```
 
     >`grim` 截图工具。
 
     >`slurp` 选取区域工具。
-
-    >`hyprpicker` 提取屏幕颜色。
 
     >`ddcutil-service` ddc 调节外接屏幕亮度。
 
