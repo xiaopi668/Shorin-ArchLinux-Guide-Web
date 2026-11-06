@@ -8,6 +8,11 @@ on:
 permissions:
   contents: write
 
+# 定时任务与手动触发不并发：两次 merge 同时推 main 会互相打断
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -16,21 +21,33 @@ jobs:
         with:
           fetch-depth: 0
 
+      # git 创建合并提交前必须先有身份，否则直接
+      # fatal: empty ident name (for <runner@...>) not allowed
+      # —— 之前这一步只在下面 workflow_dispatch 的分支里配置过，
+      #    定时任务因此每天都失败，还被 || 误报成「合并冲突」。
+      - name: Configure git identity
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - name: Sync from upstream
         run: |
           git remote add upstream https://github.com/SHORiN-KiWATA/Shorin-ArchLinux-Guide.git
           git fetch upstream
           if git merge-base --is-ancestor upstream/main HEAD; then
             echo "Already up to date"
-          else
-            git merge upstream/main --no-edit -m "Sync upstream" \
-              || { echo "::error::Merge conflict, resolve manually"; exit 1; }
+            exit 0
+          fi
+          if git merge upstream/main --no-edit -m "Sync upstream"; then
             git push origin main
+          else
+            git merge --abort || true
+            echo "::error::与上游合并产生冲突，需人工处理：本地 git merge upstream/main 解完再推"
+            exit 1
           fi
 
       - name: Bump build to trigger CF Pages
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
-          git config user.name "xiaopi668"
-          git config user.email "xiaopi668@users.noreply.github.com"
-          git commit --allow-empty -m "Trigger CF Pages rebuild" && git push origin main
+          git commit --allow-empty -m "Trigger CF Pages rebuild"
+          git push origin main
